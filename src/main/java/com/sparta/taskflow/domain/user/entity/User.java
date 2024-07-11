@@ -56,4 +56,14 @@ public class User {
         return this.status == Status.NORMAL;
     }
 
+        @Builder
+    public User(Long id, String username, String password, String nickname, Role role, Status status, String refreshToken) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.role = role != null ? role : Role.USER;
+        this.status = status != null ? status : Status.NORMAL;
+        this.refreshToken = refreshToken;
+    }
 }
