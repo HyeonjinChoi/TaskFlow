@@ -22,7 +22,7 @@ public class BoardController {
     public ResponseEntity<?> createBoard(@RequestBody BoardCreateReqDto reqDto) {
         BoardCreateResDto responseDto = boardService.createBoard(reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "게시글가 생성됩니다!"
+                , "보드가 생성됩니다!"
                 , responseDto));
     }
 
@@ -31,7 +31,7 @@ public class BoardController {
     public ResponseEntity<?> getBoards() {
         List<BoardResDto> responseDto = boardService.getBoards();
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "게시글 전체 조회"
+                , "보드 전체 조회"
                 , responseDto));
     }
 
@@ -39,7 +39,7 @@ public class BoardController {
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
         BoardResDto responseDto = boardService.getBoard(boardId);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "게시글  단건 조회!"
+                , "보드 단건 조회!"
                 , responseDto));
     }
 
@@ -47,7 +47,7 @@ public class BoardController {
     public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardUpdateReqDto reqDto) {
         BoardResDto responseDto = boardService.updateBoard(boardId, reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "게시글가 수정됩니다!"
+                , "보드가 수정됩니다!"
                 , responseDto));
     }
 
@@ -55,18 +55,15 @@ public class BoardController {
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "게시글가 삭제됩니다!"
+                , "보드가 삭제됩니다!"
                 , null));
     }
 
-    @PostMapping(/boards/{boardId}/invitations)
-    public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto) {
-        boardService.inviteUser(boardId, reqDto);
-        return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "회원을 초대합니다."
-                , null));
-    }
-
-
-
+//    @PostMapping(/boards/{boardId}/invitations)
+//    public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto) {
+//        boardService.inviteUser(boardId, reqDto);
+//        return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
+//                , "회원을 초대합니다."
+//                , null));
+//    }
 }
