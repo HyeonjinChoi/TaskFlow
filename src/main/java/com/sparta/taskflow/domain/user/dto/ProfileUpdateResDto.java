@@ -1,30 +1,22 @@
 package com.sparta.taskflow.domain.user.dto;
 
 import com.sparta.taskflow.domain.user.entity.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class UserProfileResDto {
-    private Long id;
+public class ProfileUpdateResDto {
     private String nickname;
-    private String username;
-    private String email;
-    private String instroduction;
+    private String introduction;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public UserProfileResDto(User user) {
-        this.id = user.getId();
+    public ProfileUpdateResDto(User user) {
         this.nickname = user.getNickname();
-        this.username = user.getUsername();
-        this.email = user.getEmail();
-        this.instroduction = user.getIntroduction();
+        this.introduction = user.getIntroduction();
         this.createdAt = user.getCreatedAt();
         this.modifiedAt = user.getModifiedAt();
     }
