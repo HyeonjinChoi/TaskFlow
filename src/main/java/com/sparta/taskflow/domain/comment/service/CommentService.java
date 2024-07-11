@@ -32,6 +32,20 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
+    public CommentResponseDto updateComment(CommentRequestDto requestDto, User user, Long cardId, Long commentId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 카드입니다.")
+        );
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 댓글입니다.")
+        );
+
+        comment.update(requestDto);
+        commentRepository.save(comment);
+        return new CommentResponseDto(comment);
+    }
+
 
 
 

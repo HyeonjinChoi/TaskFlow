@@ -27,6 +27,13 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PutMapping("/boards/{boardId}/columns/{columnId}/cards/{cardId}/comments/{commentId}")
+    public ResponseEntity<?> updateComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis, @PathVariable("cardId") Long cardId, @PathVariable("commentId") Long commentId) {
+        CommentResponseDto responseDto = commentService.updateComment(requestDto, userDetailis.getUser(), cardId, commentId);
+        CommonDto<CommentResponseDto> response = new CommonDto<>(HttpStatus.OK.value(), "댓글 수정에 성공하셨습니다", responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    }
 
 }
 
