@@ -1,4 +1,32 @@
 package com.sparta.taskflow.domain.comment.controller;
 
+import com.sparta.taskflow.common.dto.CommonDto;
+import com.sparta.taskflow.domain.comment.dto.CommentRequestDto;
+import com.sparta.taskflow.domain.comment.dto.CommentResponseDto;
+import com.sparta.taskflow.domain.comment.service.CommentService;
+import jakarta.websocket.server.PathParam;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api")
 public class CommentController {
+
+    private final CommentService commentService;
+
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
+
+    @PostMapping("/boards/{boardId}/columns/{columnId}/cards/{cardId}/comments")
+    public ResponseEntity<?> createComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis, @PathVariable("cardId") Long cardId) {
+        CommentResponseDto responseDto = commentService.createComment(requestDto, userDetailis.getUser(),cardId);
+        CommonDto<CommentResponseDto> response = new CommonDto<>(HttpStatus.OK.value(), "댓글 생성에 성공하셨습니다", responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
 }
+
