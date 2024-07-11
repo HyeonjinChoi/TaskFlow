@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -17,28 +18,60 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(unique = true)
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Column
     private String password;
 
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(unique = true)
+    private String nickname;
+
     @Column(name = "introduction", nullable = true)
     private String introduction;
 
-    @Column(name = "nickname", nullable = false)
-    private String nickname;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    private String refreshToken;
+
+
+    //:::::::::::// ENUM //::::::::::://
+    public enum Role{
+        USER,
+        MANAGER
+    }
+    public enum Status{
+        NORMAL,
+        DELETED
+    }
+
+    public boolean isBlocked(){
+        return this.status == Status.DELETED;
+    }
+
+    @Transient
+    public boolean isActivity() {
+        return this.status == Status.NORMAL;
+    }
 
     @Builder
-    public User(String username, String password, String email, String introduction, String nickname) {
+    public User(Long id, String username, String password,String email, String nickname, String introduction, Role role, Status status, String refreshToken) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.introduction = introduction;
         this.nickname = nickname;
+        this.introduction = introduction;
+        this.role = role != null ? role : Role.USER;
+        this.status = status != null ? status : Status.NORMAL;
+        this.refreshToken = refreshToken;
     }
 
     public void update(ProfileUpdateReqDto profileUpdateReqDto) {
