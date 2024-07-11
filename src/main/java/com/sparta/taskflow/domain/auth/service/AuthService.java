@@ -2,7 +2,7 @@ package com.sparta.taskflow.domain.auth.service;
 
 import com.sparta.taskflow.common.exception.BusinessException;
 import com.sparta.taskflow.common.exception.ErrorCode;
-import com.sparta.taskflow.domain.auth.dto.LoginDto;
+import com.sparta.taskflow.domain.auth.dto.LoginRequestDto;
 import com.sparta.taskflow.domain.auth.dto.SignoutRequestDto;
 import com.sparta.taskflow.domain.auth.dto.SignupRequestDto;
 import com.sparta.taskflow.domain.user.entity.User;
@@ -12,7 +12,6 @@ import com.sparta.taskflow.security.service.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -54,12 +53,13 @@ public class AuthService {
         return  "회원가입이 완료되었습니다.";
     }
 
-    public String signout(SignoutRequestDto requestDto, UserPrincipal userPrincipal) {
+    public String signout(SignoutRequestDto requestDto, User user) {
+        user.signout();
         return null;
     }
 
     @Transactional
-    public String login(LoginDto requestDto) {
+    public String login(LoginRequestDto requestDto) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -85,8 +85,9 @@ public class AuthService {
         }
     }
 
-
-    public String logout(UserPrincipal userPrincipal) {
-        return null;
+    @Transactional
+    public String logout(User user) {
+        user.deleteRefreshToken();
+        return "로그아웃이 완료되었습니다.";
     }
 }

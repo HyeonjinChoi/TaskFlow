@@ -56,6 +56,15 @@ public class User extends Timestamped {
         DELETED
     }
 
+    public void deleteRefreshToken() {
+        this.refreshToken = null;
+    }
+
+    public void signout() {
+        this.status = Status.DELETED;
+        deleteRefreshToken();
+    }
+
     public boolean isBlocked(){
         return this.status == Status.DELETED;
     }
