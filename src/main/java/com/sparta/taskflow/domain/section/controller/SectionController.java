@@ -30,7 +30,7 @@ public class SectionController {
 
 	private final SectionService sectionService;
 
-	@PostMapping("/section")
+	@PostMapping("/sections")
 	public ResponseEntity<CommonDto<SectionResponseDto>> createSection (
 		@RequestBody SectionRequestDto requestDto,
 		User user) {
@@ -41,7 +41,7 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.CREATED.value(), "섹션 생성에 성공하였습니다.", responseDto));
 	}
 
-	@GetMapping("/section")
+	@GetMapping("/sections")
 	public ResponseEntity<CommonDto<Page<SectionResponseDto>>> getSections (
 		@RequestBody BoardIdRequestDto boardIdRequestDto,
 		@RequestParam int page) {
@@ -52,7 +52,7 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 조회에 성공하였습니다.", sections));
 	}
 
-	@DeleteMapping("/section/{sectionId}")
+	@DeleteMapping("/sections/{sectionId}")
 	public ResponseEntity<CommonDto<Void>> deleteSection (
 		@PathVariable Long sectionId,
 		User user) {
