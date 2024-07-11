@@ -41,6 +41,10 @@ public class User extends Timestamped {
 
     private String refreshToken;
 
+    public void addRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 
     //:::::::::::// ENUM //::::::::::://
     public enum Role{

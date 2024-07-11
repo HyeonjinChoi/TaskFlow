@@ -1,7 +1,7 @@
 package com.sparta.taskflow.security.filter;
 
 import com.sparta.taskflow.domain.user.entity.User;
-import com.sparta.taskflow.security.principal.UserPrincipal;
+import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import com.sparta.taskflow.security.service.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,7 +39,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
         User user = jwtUtil.getUserFromToken(accessToken);
-        UserPrincipal userPrincipal = new UserPrincipal(user);
+        UserDetailsImpl userPrincipal = new UserDetailsImpl(user);
         Authentication auth = new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(auth);

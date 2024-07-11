@@ -3,6 +3,8 @@ package com.sparta.taskflow.security.service;
 
 import com.sparta.taskflow.domain.user.entity.User;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -23,6 +26,7 @@ public class JwtUtil {
 
     public static String CLAIM_ID = "id";
     public static String CLAIM_NICKNAME = "nickname";
+    public static String CLAIM_EMAIL = "email";
     public static String CLAIM_ROLE = "role";
     public static String CLAIM_STATUS = "status";
     private final Logger log = LoggerFactory.getLogger(JwtUtil.class.getName());
@@ -31,7 +35,13 @@ public class JwtUtil {
     private String SecretKey;
     private Key key;
 
-    public String createAccessToken(Long id, String username, User.Role role, User.Status status, String nickname) {
+    @PostConstruct
+    public void init() {
+        byte[] bytes = Base64.getDecoder().decode(SecretKey);
+        key = Keys.hmacShaKeyFor(bytes);
+    }
+
+    public String createAccessToken(Long id, String username,String email ,User.Role role, User.Status status, String nickname) {
         Date date = new Date();
 
         return Jwts.builder()
@@ -39,10 +49,11 @@ public class JwtUtil {
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime() + AccessTokenTime))
                 .claim(CLAIM_ID,id)
+                .claim(CLAIM_EMAIL, email)
                 .claim(CLAIM_ROLE,role)
                 .claim(CLAIM_STATUS,status)
                 .claim(CLAIM_NICKNAME,nickname)
-                .signWith(key,SignatureAlgorithm.ES256)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
     }
