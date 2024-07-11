@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sparta.taskflow.domain.board.entity.Board;
+import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.comment.entity.Comment;
 import com.sparta.taskflow.common.util.Timestamped;
 import com.sparta.taskflow.domain.user.entity.User;
@@ -26,11 +27,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "column")
+@Table(name = "section")
 public class Section extends Timestamped {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "column_id")
+	@Column(name = "section_id")
 	private Long columnId;
 
 	@Column(name = "title")
@@ -50,16 +51,16 @@ public class Section extends Timestamped {
 	@JoinColumn(name = "board_id", nullable = false)
 	private Board board;
 
-	@OneToMany(mappedBy = "column", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Comment> comments = new ArrayList<>();
+	@OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Card> cards = new ArrayList<>();
 
 	@Builder
-	public Section(String title, String contents, int position, User user, Board board, List<Comment> comments) {
+	public Section(String title, String contents, int position, User user, Board board, List<Card> cards) {
 		this.title = title;
 		this.contents = contents;
 		this.position = position;
 		this.user = user;
 		this.board = board;
-		this.comments = comments != null ? comments : new ArrayList<>();
+		this.cards = cards != null ? cards : new ArrayList<>();
 	}
 }
