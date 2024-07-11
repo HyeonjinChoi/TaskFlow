@@ -52,13 +52,24 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 조회에 성공하였습니다.", sections));
 	}
 
+	@PutMapping("/sections")
+	public ResponseEntity<CommonDto<Void>> updateSectionPosition(
+		@RequestBody UpdateSectionPositionDto updateSectionPositionDto) {
+
+		sectionService.updateSectionPosition(updateSectionPositionDto);
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 순서 변경에 성공하였습니다.", null));
+	}
+
 	@DeleteMapping("/sections/{sectionId}")
 	public ResponseEntity<CommonDto<Void>> deleteSection (
 		@PathVariable Long sectionId,
 		User user) {
 
 		sectionService.deleteSection(sectionId, user);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT)
+		return ResponseEntity
+			.status(HttpStatus.NO_CONTENT)
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "섹션 삭제에 성공하였습니다.", null));
 	}
 }

@@ -63,4 +63,8 @@ public class Section extends Timestamped {
 		this.board = board;
 		this.cards = cards != null ? cards : new ArrayList<>();
 	}
+
+	public void updatePosition(int newPosition) {
+		this.position = newPosition;
+	}
 }

@@ -2,6 +2,7 @@ package com.sparta.taskflow.domain.section.service;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -72,11 +73,39 @@ public class SectionService {
 	}
 
 	@Transactional
+	public void updateSectionPosition(UpdateSectionPositionDto updateSectionPositionDto) {
+		Section section = sectionRepository.findById(updateSectionPositionDto.getSectionId())
+			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+
+		if (!Objects.equals(section.getUser().getUserId(), updateSectionPositionDto.getUserId())) {
+			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+		}
+
+		int newPosition = updateSectionPositionDto.getNewPosition();
+		int oldPosition = section.getPosition();
+		Board board = section.getBoard();
+
+		List<Section> sections = sectionRepository.findByBoardOrderByPositionAsc(board);
+
+		sections.forEach(s -> {
+			if (newPosition < oldPosition && s.getPosition() >= newPosition && s.getPosition() < oldPosition) {
+				s.updatePosition(s.getPosition() + 1);
+			} else if (newPosition > oldPosition && s.getPosition() <= newPosition && s.getPosition() > oldPosition) {
+				s.updatePosition(s.getPosition() - 1);
+			} else if (Objects.equals(s.getColumnId(), section.getColumnId())) {
+				s.updatePosition(newPosition);
+			}
+		});
+
+		sectionRepository.saveAll(sections);
+	}
+
+	@Transactional
 	public void deleteSection(Long sectionId, User user) {
 		Section section = sectionRepository.findById(sectionId)
 			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
 
-		if (!section.getUser().getUserId().equals(user.getUserId())) {
+		if (!Objects.equals(section.getUser().getUserId(), user.getUserId())) {
 			throw new IllegalArgumentException("사용자 권한이 없습니다.");
 		}
 
