@@ -35,5 +35,11 @@ public class CommentController {
 
     }
 
+    @DeleteMapping("/boards/{boardId}/columns/{columnId}/cards/{cardId}/comments/{commentId}")
+    public ResponseEntity<?> deleteComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis, @PathVariable("cardId") Long cardId, @PathVariable("commentId") Long commentId) {
+        commentService.deleteComment(requestDto, userDetailis.getUser(), cardId, commentId);
+        return ResponseEntity.status(HttpStatus.OK).body("답글 삭제에 성공하셨습니다.");
+    }
+
 }
 

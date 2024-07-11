@@ -46,6 +46,19 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
+    public CommentResponseDto deleteComment(User user, Long cardId, Long commentId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 카드입니다.")
+        );
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 카드입니다.")
+        );
+
+        commentRepository.delete(comment);
+        return new CommentResponseDto(comment);
+    }
+
 
 
 
