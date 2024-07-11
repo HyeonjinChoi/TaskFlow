@@ -1,7 +1,8 @@
 package com.sparta.taskflow.domain.user.entity;
 
+import com.sparta.taskflow.common.util.Timestamped;
+import com.sparta.taskflow.domain.user.dto.ProfileUpdateReqDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,14 +10,12 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
-public class User {
+@Table(name = "user")
+public class User extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
     private Long id;
 
     @Column(unique = true)
@@ -25,8 +24,14 @@ public class User {
     @Column
     private String password;
 
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Column(unique = true)
     private String nickname;
+
+    @Column(name = "introduction", nullable = true)
+    private String introduction;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -56,14 +61,23 @@ public class User {
         return this.status == Status.NORMAL;
     }
 
-        @Builder
-    public User(Long id, String username, String password, String nickname, Role role, Status status, String refreshToken) {
+    @Builder
+    public User(Long id, String username, String password,String email, String nickname, String introduction, Role role, Status status, String refreshToken) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.email = email;
         this.nickname = nickname;
+        this.introduction = introduction;
         this.role = role != null ? role : Role.USER;
         this.status = status != null ? status : Status.NORMAL;
         this.refreshToken = refreshToken;
     }
+
+    public void update(ProfileUpdateReqDto profileUpdateReqDto) {
+        this.nickname = profileUpdateReqDto.getNickname();
+        this.introduction = profileUpdateReqDto.getInstroduction();
+    }
+
+    public void passwordUpdate(String password) {this.password = password;}
 }
