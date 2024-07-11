@@ -55,6 +55,7 @@ public class SectionService {
 		return new SectionResponseDto(sectionRepository.save(section));
 	}
 
+	@Transactional(readOnly = true)
 	public Page<SectionResponseDto> getSections(
 		BoardIdRequestDto boardIdRequestDto,
 		int page) {
