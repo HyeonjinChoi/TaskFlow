@@ -68,11 +68,6 @@ public class UserService {
         );
     }
 
-    public User findByUserName(String userName) {
-        return userRepository.findByUsername(userName).orElseThrow(() ->
-                new IllegalArgumentException("해당 사용자는 존재하지 않습니다"));
-    }
-
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
