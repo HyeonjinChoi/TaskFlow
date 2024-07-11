@@ -9,12 +9,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
 import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
 import com.sparta.taskflow.domain.section.dto.SectionRequestDto;
 import com.sparta.taskflow.domain.section.dto.SectionResponseDto;
+import com.sparta.taskflow.domain.section.dto.UpdateSectionPositionDto;
 import com.sparta.taskflow.domain.section.entity.Section;
 import com.sparta.taskflow.domain.section.repository.SectionRepository;
 import com.sparta.taskflow.domain.user.entity.User;
@@ -29,8 +31,6 @@ public class SectionService {
 	private final UserRepository userRepository;
 	private final BoardRepository boardRepository;
 	private final SectionRepository sectionRepository;
-
-	private final int
 
 	public SectionResponseDto createSection(
 		SectionRequestDto requestDto,
@@ -68,6 +68,18 @@ public class SectionService {
 			.toList();
 
 		return new PageImpl<>(sectionDtos, pageable, sections.getTotalElements());
+	}
+
+	@Transactional
+	public void deleteSection(Long sectionId, User user) {
+		Section section = sectionRepository.findById(sectionId)
+			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+
+		if (!section.getUser().getUserId().equals(user.getUserId())) {
+			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+		}
+
+		sectionRepository.delete(section);
 	}
 
 	private Board findBoard(Long boardId) {
