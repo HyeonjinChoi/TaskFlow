@@ -9,6 +9,7 @@ import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import com.sparta.taskflow.security.service.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,12 +55,15 @@ public class AuthService {
     }
 
     public String signout(SignoutRequestDto requestDto, User user) {
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호와 사용자의 비밀번호가 일치하지 않습니다.");
+        }
         user.signout();
-        return null;
+        return "회원탈퇴가 완료되었습니다. 그 동안 감사했습니다.";
     }
 
     @Transactional
-    public String login(LoginRequestDto requestDto) {
+    public String login(LoginRequestDto requestDto , HttpServletResponse httpResponse) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -75,6 +79,7 @@ public class AuthService {
             String accessToken = jwtUtil.createAccessToken(user.getId(), user.getUsername(),user.getEmail(), user.getRole(), user.getStatus(), user.getNickname());
             String refreshToken = jwtUtil.createRefreshToken();
 
+            httpResponse.addHeader(JwtUtil.TOKEN_HEADER,accessToken);
             user.addRefreshToken(refreshToken);
 
             return "로그인이 완료 되었습니다.";

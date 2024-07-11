@@ -16,7 +16,7 @@ public enum ErrorCode {
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."),
 	EXIST_USER(HttpStatus.NOT_FOUND, "이미 존제하는 유저입니다."),
 	USER_BLOCKED(HttpStatus.BAD_GATEWAY,"회원탈퇴한 유저입니다." ),
-	FAIL_AUTHENTICATION(HttpStatus.NOT_FOUND, "아이디나 비밀번호가 정확하지 않습니다.");
+	FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "아이디나 비밀번호가 정확하지 않습니다.");
 
 
 	// comment

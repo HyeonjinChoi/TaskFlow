@@ -6,6 +6,7 @@ import com.sparta.taskflow.domain.auth.dto.SignupRequestDto;
 import com.sparta.taskflow.domain.auth.service.AuthService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import com.sparta.taskflow.security.service.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.nio.file.attribute.UserPrincipal;
 
 @RestController
@@ -36,15 +38,8 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto) {
-        String accessToken = authService.login(requestDto);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, JwtUtil.TOKEN_AUTH_SCHEME + accessToken);
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body("로그인이 완료 되었습니다.");
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto , HttpServletResponse httpResponse) {
+        return ResponseEntity.ok().body(authService.login(requestDto,httpResponse));
     }
 
     // 로그아웃
