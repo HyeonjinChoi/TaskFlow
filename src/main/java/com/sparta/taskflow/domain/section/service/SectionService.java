@@ -73,7 +73,9 @@ public class SectionService {
 	}
 
 	@Transactional
-	public void updateSectionPosition(UpdateSectionPositionDto updateSectionPositionDto) {
+	public void updateSectionPosition(
+		UpdateSectionPositionDto updateSectionPositionDto) {
+
 		Section section = sectionRepository.findById(updateSectionPositionDto.getSectionId())
 			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
 
@@ -92,7 +94,7 @@ public class SectionService {
 				s.updatePosition(s.getPosition() + 1);
 			} else if (newPosition > oldPosition && s.getPosition() <= newPosition && s.getPosition() > oldPosition) {
 				s.updatePosition(s.getPosition() - 1);
-			} else if (Objects.equals(s.getColumnId(), section.getColumnId())) {
+			} else if (Objects.equals(s.getSectionId(), section.getSectionId())) {
 				s.updatePosition(newPosition);
 			}
 		});
@@ -101,7 +103,10 @@ public class SectionService {
 	}
 
 	@Transactional
-	public void deleteSection(Long sectionId, User user) {
+	public void deleteSection(
+		Long sectionId,
+		User user) {
+
 		Section section = sectionRepository.findById(sectionId)
 			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
 

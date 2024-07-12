@@ -32,7 +32,7 @@ public class Section extends Timestamped {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "section_id")
-	private Long columnId;
+	private Long sectionId;
 
 	@Column(name = "title")
 	private String title;
