@@ -28,7 +28,7 @@ public class UserService {
     public ProfileUpdateResDto updateProfile(User user, ProfileUpdateReqDto profileUpdateReqDto) {
         User users = getUser(user);
         users.update(profileUpdateReqDto);
-        return new ProfileUpdateResDto(user);
+        return new ProfileUpdateResDto(users);
     }
 
     // 비밀번호 변경
@@ -54,7 +54,7 @@ public class UserService {
         // 변경할 비밀번호로 수정
         users.passwordUpdate(passwordEncoder.encode(newPassword));
 
-        return new PasswordUpdateResDto(user);
+        return new PasswordUpdateResDto(users);
     }
 
     private User getUser(User user) {
