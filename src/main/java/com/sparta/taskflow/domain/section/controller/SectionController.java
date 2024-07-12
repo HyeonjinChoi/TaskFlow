@@ -17,6 +17,7 @@ import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
 import com.sparta.taskflow.domain.section.dto.SectionRequestDto;
 import com.sparta.taskflow.domain.section.dto.SectionResponseDto;
+import com.sparta.taskflow.domain.section.dto.SectionUpdateRequestDto;
 import com.sparta.taskflow.domain.section.dto.UpdateSectionPositionDto;
 import com.sparta.taskflow.domain.section.service.SectionService;
 import com.sparta.taskflow.domain.user.entity.User;
@@ -55,9 +56,9 @@ public class SectionController {
 	@PutMapping("/cards/{cardId}")
 	public ResponseEntity<CommonDto<SectionResponseDto>> updateSection(
 		@PathVariable Long cardId,
-		@RequestBody SectionRequestDto cardRequestDto) {
+		@RequestBody SectionUpdateRequestDto sectionUpdateRequestDto) {
 
-		SectionResponseDto card = sectionService.updateSection(cardId, cardRequestDto);
+		SectionResponseDto card = sectionService.updateSection(cardId, sectionUpdateRequestDto);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 수정에 성공하였습니다.", card));
