@@ -1,5 +1,11 @@
 package com.sparta.taskflow.domain.card.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.sparta.taskflow.domain.board.entity.Board;
@@ -8,6 +14,8 @@ import com.sparta.taskflow.domain.card.dto.CardRequestDto;
 import com.sparta.taskflow.domain.card.dto.CardResponseDto;
 import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.card.repository.CardRepository;
+import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
+import com.sparta.taskflow.domain.section.dto.SectionResponseDto;
 import com.sparta.taskflow.domain.section.entity.Section;
 import com.sparta.taskflow.domain.section.repository.SectionRepository;
 import com.sparta.taskflow.domain.user.entity.User;
@@ -46,6 +54,21 @@ public class CardService {
 			.build();
 
 		return new CardResponseDto(cardRepository.save(card));
+	}
+
+	public Page<CardResponseDto> getCards(
+		BoardIdRequestDto boardIdRequestDto,
+		int page) {
+
+		Board board = findBoard(boardIdRequestDto.getBoardId());
+		Pageable pageable = PageRequest.of(page, 5);
+
+		Page<Card> cards = cardRepository.findByBoard(board, pageable);
+		List<CardResponseDto> cardDtos = cards.stream()
+			.map(CardResponseDto::new)
+			.toList();
+
+		return new PageImpl<>(cardDtos, pageable, cards.getTotalElements());
 	}
 
 	private Board findBoard(Long boardId) {
