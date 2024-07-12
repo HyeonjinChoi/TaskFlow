@@ -88,7 +88,7 @@ public class User extends Timestamped {
 
     public void update(ProfileUpdateReqDto profileUpdateReqDto) {
         this.nickname = profileUpdateReqDto.getNickname();
-        this.introduction = profileUpdateReqDto.getInstroduction();
+        this.introduction = profileUpdateReqDto.getIntroduction();
     }
 
     public void passwordUpdate(String password) {this.password = password;}

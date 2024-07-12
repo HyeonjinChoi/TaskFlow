@@ -9,5 +9,5 @@ public class ProfileUpdateReqDto {
 
     private String nickname;
 
-    private String instroduction;
+    private String introduction;
 }
