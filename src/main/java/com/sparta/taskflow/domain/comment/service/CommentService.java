@@ -26,6 +26,8 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final CardRepository cardRepository;
+
+    private final UserRepository userRepository;
     public CommentService(CommentRepository commentRepository, CardRepository cardRepository, UserRepository userRepository) {
         this.cardRepository = cardRepository;
         this.userRepository = userRepository;
