@@ -20,29 +20,22 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // 사용자 프로필 조회
-    public UserProfileResDto getProfile(Long userId) {
-        User user = findById(userId);
+    public UserProfileResDto getProfile(User user) {
         UserProfileResDto responseDto = new UserProfileResDto(user);
         return responseDto;
     }
 
     // 사용자 프로필 수정
     @Transactional
-    public ProfileUpdateResDto updateProfile(Long userId, ProfileUpdateReqDto profileUpdateReqDto) {
-        User user = findById(userId);
+    public ProfileUpdateResDto updateProfile(User user, ProfileUpdateReqDto profileUpdateReqDto) {
         user.update(profileUpdateReqDto);
         return new ProfileUpdateResDto(user);
     }
 
     // 비밀번호 변경
     @Transactional
-    public PasswordUpdateResDto updatePassword(Long userId, PasswordUpdateReqDto passwordUpdateReqDto) {
-        User currentUser = getCurrentUser();
-        if (!currentUser.getId().equals(userId)) {
-            throw new IllegalArgumentException("본인의 비밀번호만 변경 할 수 있습니다.");
-        }
+    public PasswordUpdateResDto updatePassword(User user, PasswordUpdateReqDto passwordUpdateReqDto) {
 
-        User user = findById(userId);
         String currentPassword = passwordUpdateReqDto.getCurrentPassword();
         String newPassword = passwordUpdateReqDto.getNewPassword();
 
@@ -60,17 +53,5 @@ public class UserService {
         user.passwordUpdate(passwordEncoder.encode(newPassword));
 
         return new PasswordUpdateResDto(user);
-    }
-
-    private User findById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() ->
-                new IllegalArgumentException("해당 사용자는 존재하지 않습니다.")
-        );
-    }
-
-    private User getCurrentUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("현재 사용자를 찾을 수 없습니다."));
     }
 }
