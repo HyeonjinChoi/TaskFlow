@@ -2,7 +2,6 @@ package com.sparta.taskflow.domain.board.controller;
 
 import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.domain.board.dto.*;
-import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,8 +18,8 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/boards")
-    public ResponseEntity<?> createBoard(@RequestBody BoardCreateReqDto reqDto) {
-        BoardCreateResDto responseDto = boardService.createBoard(reqDto);
+    public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto) {
+        BoardResDto responseDto = boardService.createBoard(reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "보드가 생성됩니다!"
                 , responseDto));
@@ -43,7 +42,7 @@ public class BoardController {
     }
 
     @PutMapping("/boards/{boardId}")
-    public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardUpdateReqDto reqDto) {
+    public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardReqDto reqDto) {
         BoardResDto responseDto = boardService.updateBoard(boardId, reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "보드가 수정됩니다!"

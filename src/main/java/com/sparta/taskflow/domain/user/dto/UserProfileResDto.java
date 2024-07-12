@@ -1,11 +1,9 @@
 package com.sparta.taskflow.domain.user.dto;
 
 import com.sparta.taskflow.domain.user.entity.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

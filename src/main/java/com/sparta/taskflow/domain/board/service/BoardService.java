@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,14 +17,14 @@ public class BoardService {
 
     // 보드 생성
     @Transactional
-    public BoardCreateResDto createBoard(BoardCreateReqDto reqDto) {
+    public BoardResDto createBoard(BoardReqDto reqDto) {
         if (reqDto.getName() == null || reqDto.getDescription() == null) {
             throw new IllegalArgumentException("보드 이름과 설명은 필수입니다.");
         }
 
         Board board = new Board(reqDto);
         Board savedBoard = boardRepository.save(board);
-        return new BoardCreateResDto(savedBoard);
+        return new BoardResDto(savedBoard);
     }
 
     // 모든 보드 조회
@@ -45,7 +44,7 @@ public class BoardService {
 
     // 보드 수정
     @Transactional
-    public BoardResDto updateBoard(Long boardId, BoardUpdateReqDto reqDto) {
+    public BoardResDto updateBoard(Long boardId, BoardReqDto reqDto) {
         if (reqDto.getName() == null || reqDto.getDescription() == null) {
             throw new IllegalArgumentException("보드 이름과 설명은 필수입니다.");
         }
