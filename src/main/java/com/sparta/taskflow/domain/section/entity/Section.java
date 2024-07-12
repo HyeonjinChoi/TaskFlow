@@ -34,9 +34,6 @@ public class Section extends Timestamped {
 	@Column(name = "section_id")
 	private Long sectionId;
 
-	@Column(name = "title")
-	private String title;
-
 	@Column(name = "contents")
 	private String contents;
 
@@ -55,8 +52,7 @@ public class Section extends Timestamped {
 	private List<Card> cards = new ArrayList<>();
 
 	@Builder
-	public Section(String title, String contents, int position, User user, Board board, List<Card> cards) {
-		this.title = title;
+	public Section(String contents, int position, User user, Board board, List<Card> cards) {
 		this.contents = contents;
 		this.position = position;
 		this.user = user;

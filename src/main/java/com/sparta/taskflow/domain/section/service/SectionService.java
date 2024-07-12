@@ -1,9 +1,7 @@
 package com.sparta.taskflow.domain.section.service;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,7 +19,6 @@ import com.sparta.taskflow.domain.section.dto.UpdateSectionPositionDto;
 import com.sparta.taskflow.domain.section.entity.Section;
 import com.sparta.taskflow.domain.section.repository.SectionRepository;
 import com.sparta.taskflow.domain.user.entity.User;
-import com.sparta.taskflow.domain.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SectionService {
 
-	private final UserRepository userRepository;
 	private final BoardRepository boardRepository;
 	private final SectionRepository sectionRepository;
 
@@ -39,14 +35,13 @@ public class SectionService {
 
 		Board board = findBoard(requestDto.getBoardId());
 
-		if (sectionRepository.existsByTitleAndBoard(requestDto.getTitle(), board)) {
+		if (sectionRepository.existsByContentsAndBoard(requestDto.getContents(), board)) {
 			throw new IllegalArgumentException("같은 컬럼이 존재합니다.");
 		}
 
 		int position = sectionRepository.countByBoard(board);
 
 		Section section = Section.builder()
-			.title(requestDto.getTitle())
 			.contents(requestDto.getContents())
 			.position(position)
 			.user(user)
