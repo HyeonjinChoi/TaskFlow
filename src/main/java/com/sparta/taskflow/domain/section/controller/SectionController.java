@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ public class SectionController {
 
 	private final SectionService sectionService;
 
+	@PreAuthorize("hasRole('MANAGER')")
 	@PostMapping
 	public ResponseEntity<CommonDto<SectionResponseDto>> createSection (
 			@RequestBody SectionRequestDto requestDto,
@@ -40,6 +42,7 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 조회에 성공하였습니다.", sections));
 	}
 
+	@PreAuthorize("hasRole('MANAGER')")
 	@PutMapping("/{sectionId}")
 	public ResponseEntity<CommonDto<SectionResponseDto>> updateSection(
 		@PathVariable Long sectionId,
@@ -51,6 +54,7 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 수정에 성공하였습니다.", card));
 	}
 
+	@PreAuthorize("hasRole('MANAGER')")
 	@DeleteMapping("/{sectionId}")
 	public ResponseEntity<CommonDto<Void>> deleteSection (
 		@PathVariable Long sectionId,
@@ -62,6 +66,7 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "섹션 삭제에 성공하였습니다.", null));
 	}
 
+	@PreAuthorize("hasRole('MANAGER')")
 	@PutMapping("/move")
 	public ResponseEntity<CommonDto<Void>> updateSectionPosition(
 		@RequestBody UpdateSectionPositionDto updateSectionPositionDto) {
