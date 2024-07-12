@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
@@ -56,6 +57,7 @@ public class CardService {
 		return new CardResponseDto(cardRepository.save(card));
 	}
 
+	@Transactional(readOnly = true)
 	public Page<CardResponseDto> getCards(
 		BoardIdRequestDto boardIdRequestDto,
 		int page) {
@@ -69,6 +71,14 @@ public class CardService {
 			.toList();
 
 		return new PageImpl<>(cardDtos, pageable, cards.getTotalElements());
+	}
+
+	@Transactional(readOnly = true)
+	public CardResponseDto getCard(Long cardId) {
+		Card card = cardRepository.findById(cardId)
+			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
+
+		return new CardResponseDto(card);
 	}
 
 	private Board findBoard(Long boardId) {

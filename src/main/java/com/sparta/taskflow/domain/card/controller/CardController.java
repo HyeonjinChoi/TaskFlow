@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +46,17 @@ public class CardController {
 		Page<CardResponseDto> cards = cardService.getCards(boardIdRequestDto, page);
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 조회에 성공하였습니다.", cards));
+			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 전체 조회에 성공하였습니다.", cards));
 
+	}
+
+	@GetMapping("/cards/{cardId}")
+	public ResponseEntity<CommonDto<CardResponseDto>> getCard(
+		@PathVariable Long cardId) {
+
+		CardResponseDto card = cardService.getCard(cardId);
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 단건 조회에 성공하였습니다.", card));
 	}
 }
