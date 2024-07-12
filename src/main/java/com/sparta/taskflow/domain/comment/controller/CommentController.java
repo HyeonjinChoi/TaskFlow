@@ -1,6 +1,7 @@
 package com.sparta.taskflow.domain.comment.controller;
 
 import com.sparta.taskflow.common.dto.CommonDto;
+import com.sparta.taskflow.common.size.PageSize;
 import com.sparta.taskflow.domain.comment.dto.CommentDeleteReqestDto;
 import com.sparta.taskflow.domain.comment.dto.CommentRequestDto;
 import com.sparta.taskflow.domain.comment.dto.CommentResponseDto;
@@ -47,7 +48,7 @@ public class CommentController {
 
     @GetMapping("comments/{commentId}")
     public ResponseEntity<?> getComment(@RequestBody CommentDeleteReqestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis,  @RequestParam(defaultValue = "1") int page) {
-        List<CommentResponseDto> responseDto = commentService.getComments(requestDto, page, 10);
+        List<CommentResponseDto> responseDto = commentService.getComments(requestDto, page, PageSize.COMMENT.getSize());
         CommonDto<List<CommentResponseDto>> response = new CommonDto<>(HttpStatus.OK.value(), "댓글 수정에 성공하셨습니다", responseDto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
 
