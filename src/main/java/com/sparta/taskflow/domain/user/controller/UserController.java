@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
 
     // 사용자의 프로필 조회
-    @GetMapping("/users/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<CommonDto<UserProfileResDto>> getProfile(@PathVariable Long userId) {
         UserProfileResDto responseDto = userService.getProfile(userId);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -25,7 +25,7 @@ public class UserController {
     }
 
     // 사용자의 프로필 수정
-    @PutMapping("/users/{userId}")
+    @PutMapping("/{userId}")
     public ResponseEntity<CommonDto<ProfileUpdateResDto>> updateProfile(@PathVariable Long userId, @RequestBody ProfileUpdateReqDto reqDto) {
         ProfileUpdateResDto responseDto = userService.updateProfile(userId, reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -33,7 +33,7 @@ public class UserController {
                 , responseDto));
     }
 
-    @PutMapping("/users/{userId}/password")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<CommonDto<PasswordUpdateResDto>> updatePassword(@PathVariable Long userId, @RequestBody PasswordUpdateReqDto reqDto) {
         PasswordUpdateResDto responseDto = userService.updatePassword(userId, reqDto);
         return  ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
