@@ -1,4 +1,4 @@
-package com.sparta.taskflow.domain.card.entity;
+package com.sparta.taskflow.domain.comment.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,10 +8,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "card")
-public class Card {
+@Table(name = "comment")
+public class Comment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "card_id")
-	private Long cardId;
+	@Column(name = "comment_id")
+	private Long commentId;
 }
