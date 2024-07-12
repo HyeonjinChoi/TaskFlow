@@ -44,7 +44,7 @@ public class JwtUtil {
     public String createAccessToken(Long id, String username,String email ,User.Role role, User.Status status, String nickname) {
         Date date = new Date();
 
-        return Jwts.builder()
+        return TOKEN_AUTH_SCHEME + Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime() + AccessTokenTime))
@@ -60,7 +60,7 @@ public class JwtUtil {
 
     public String createRefreshToken() {
         Date date = new Date();
-        return Jwts.builder()
+        return TOKEN_AUTH_SCHEME + Jwts.builder()
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime()+ RefreshTokenTime))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -96,4 +96,5 @@ public class JwtUtil {
                 .status( User.Status.valueOf(claims.get(CLAIM_STATUS, String.class)))
                 .build();
     }
+
 }
