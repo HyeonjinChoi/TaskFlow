@@ -38,9 +38,17 @@ public class AuthService {
         String password = signupRequestDto.getPassword();
         String nickname = signupRequestDto.getNickname();
         String introduction = signupRequestDto.getIntroduction();
+        String RolePassword = signupRequestDto.getRolePassword();
+
+        String roles = "67mE67CA67KI7Zi4";
+        User.Role role = User.Role.USER;
 
         if (userRepository.existsByEmailOrNicknameOrUsername(username, email, nickname))
             throw new BusinessException(ErrorCode.EXIST_USER);
+
+        if(RolePassword.equals(roles)){
+            role = User.Role.MANAGER;
+        }
 
         userRepository.save(User.builder()
                                     .username(username)
@@ -48,11 +56,15 @@ public class AuthService {
                                     .password(passwordEncoder.encode(password))
                                     .nickname(nickname)
                                     .introduction(introduction)
-                                    .role(User.Role.USER)
+                                    .role(role)
                                     .status(User.Status.NORMAL)
                                     .build());
 
-        return  "회원가입이 완료되었습니다.";
+
+        if(RolePassword.equals(roles)){
+            return  "매니저님 회원가입이 완료되었습니다.";
+        }
+        return  "유저님 회원가입이 완료되었습니다.";
     }
 
     public String signout(SignoutRequestDto requestDto, User user) {

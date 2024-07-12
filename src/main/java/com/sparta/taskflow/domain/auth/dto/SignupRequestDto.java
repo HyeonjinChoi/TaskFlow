@@ -1,5 +1,6 @@
 package com.sparta.taskflow.domain.auth.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -22,11 +23,14 @@ public class SignupRequestDto {
     private String password;
 
     @NotNull(message = "이매일을 입력해주세요.")
+    @Email
     private String email;
 
     @NotNull(message = "닉네임을 입력해주세요.")
     private String nickname;
 
     private String introduction;
+
+    private String rolePassword;
 
 }
