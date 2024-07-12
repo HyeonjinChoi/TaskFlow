@@ -6,6 +6,7 @@ import com.sparta.taskflow.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto) {
         BoardResDto responseDto = boardService.createBoard(reqDto);
@@ -41,6 +43,7 @@ public class BoardController {
                 , responseDto));
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PutMapping("/{boardId}")
     public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardReqDto reqDto) {
         BoardResDto responseDto = boardService.updateBoard(boardId, reqDto);
@@ -49,6 +52,7 @@ public class BoardController {
                 , responseDto));
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @DeleteMapping("/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
@@ -57,6 +61,7 @@ public class BoardController {
                 , null));
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping("/{boardId}/invitations")
     public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto) {
         boardService.inviteUser(boardId, reqDto);
