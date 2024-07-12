@@ -73,4 +73,10 @@ public class Card extends Timestamped {
 		this.section = section;
 		this.comments = comments != null ? comments : new ArrayList<>();
 	}
+
+	public void update(String title, String contents, LocalDateTime dueDate) {
+		this.title = title;
+		this.contents = contents;
+		this.dueDate = dueDate;
+	}
 }

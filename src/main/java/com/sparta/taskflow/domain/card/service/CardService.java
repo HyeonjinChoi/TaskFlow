@@ -81,6 +81,18 @@ public class CardService {
 		return new CardResponseDto(card);
 	}
 
+	public CardResponseDto updateCard(
+		Long cardId,
+		CardRequestDto requestDto) {
+
+		Card card = cardRepository.findById(cardId)
+			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
+
+		card.update(requestDto.getTitle(), requestDto.getContents(), requestDto.getDueDate());
+
+		return new CardResponseDto(cardRepository.save(card));
+	}
+
 	private Board findBoard(Long boardId) {
 		return boardRepository.findById(boardId).orElseThrow(() ->
 			new IllegalArgumentException("보드가 존재하지 않습니다.")

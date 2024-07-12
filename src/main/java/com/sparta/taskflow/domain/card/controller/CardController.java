@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,5 +59,16 @@ public class CardController {
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 단건 조회에 성공하였습니다.", card));
+	}
+
+	@PutMapping("/cards/{cardId}")
+	public ResponseEntity<CommonDto<CardResponseDto>> updateCard(
+		@PathVariable Long cardId,
+		@RequestBody CardRequestDto cardRequestDto) {
+
+		CardResponseDto card = cardService.updateCard(cardId, cardRequestDto);
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 수정에 성공하였습니다.", card));
 	}
 }

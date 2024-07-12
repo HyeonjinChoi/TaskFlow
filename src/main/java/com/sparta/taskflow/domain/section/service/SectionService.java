@@ -73,7 +73,9 @@ public class SectionService {
 	}
 
 	@Transactional
-	public void updateSectionPosition(UpdateSectionPositionDto updateSectionPositionDto) {
+	public void updateSectionPosition(
+		UpdateSectionPositionDto updateSectionPositionDto) {
+
 		Section section = sectionRepository.findById(updateSectionPositionDto.getSectionId())
 			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
 
@@ -101,7 +103,10 @@ public class SectionService {
 	}
 
 	@Transactional
-	public void deleteSection(Long sectionId, User user) {
+	public void deleteSection(
+		Long sectionId,
+		User user) {
+
 		Section section = sectionRepository.findById(sectionId)
 			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
 
