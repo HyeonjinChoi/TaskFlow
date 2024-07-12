@@ -40,7 +40,7 @@ public class SectionService {
 		Board board = findBoard(requestDto.getBoardId());
 
 		if (sectionRepository.existsByTitleAndBoard(requestDto.getTitle(), board)) {
-			throw new IllegalArgumentException("같은 컬럼이 존재합니다.");
+			throw new IllegalArgumentException("같은 섹션이 존재합니다.");
 		}
 
 		int position = sectionRepository.countByBoard(board);
