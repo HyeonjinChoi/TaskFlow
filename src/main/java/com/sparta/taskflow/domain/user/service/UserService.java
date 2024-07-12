@@ -1,5 +1,7 @@
 package com.sparta.taskflow.domain.user.service;
 
+import com.sparta.taskflow.common.exception.BusinessException;
+import com.sparta.taskflow.common.exception.ErrorCode;
 import com.sparta.taskflow.domain.user.dto.*;
 import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
@@ -41,12 +43,12 @@ public class UserService {
 
         // 현재 비밀번호가 사용자의 비밀번호와 맞는지 검증
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호와 사용자의 비밀번호가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.PASSWORD_INCORRECT);
         }
 
         // 변경할 비밀번호와 현재 비밀번호가 동일한지 검증
         if (passwordEncoder.matches(newPassword, user.getPassword())) {
-            throw new IllegalArgumentException("동일한 비밀번호로는 변경할 수 없습니다.");
+            throw new BusinessException(ErrorCode.PASSWORD_INCORRECT);
         }
 
         // 변경할 비밀번호로 수정

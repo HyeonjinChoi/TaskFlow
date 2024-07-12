@@ -1,5 +1,7 @@
 package com.sparta.taskflow.domain.board.service;
 
+import com.sparta.taskflow.common.exception.BusinessException;
+import com.sparta.taskflow.common.exception.ErrorCode;
 import com.sparta.taskflow.domain.board.dto.*;
 import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.entity.BoardInvitation;
@@ -22,7 +24,7 @@ public class BoardService {
     @Transactional
     public BoardResDto createBoard(BoardReqDto reqDto) {
         if (reqDto.getName() == null || reqDto.getDescription() == null) {
-            throw new IllegalArgumentException("보드 이름과 설명은 필수입니다.");
+            throw new BusinessException(ErrorCode.FAIL_AUTHENTICATION);
         }
 
         Board board = new Board(reqDto);
@@ -40,7 +42,7 @@ public class BoardService {
     @Transactional
     public BoardResDto getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
         return new BoardResDto(board);
     }
 
@@ -49,10 +51,11 @@ public class BoardService {
     @Transactional
     public BoardResDto updateBoard(Long boardId, BoardReqDto reqDto) {
         if (reqDto.getName() == null || reqDto.getDescription() == null) {
-            throw new IllegalArgumentException("보드 이름과 설명은 필수입니다.");
+            throw new BusinessException(ErrorCode.BOARD_CREATE_MISSING_DATA);
         }
         findBoard(boardId);
-        Board board = boardRepository.findById(boardId).get();
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
         board.update(reqDto);
         return new BoardResDto(board);
     }
@@ -61,7 +64,8 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId) {
         findBoard(boardId);
-        Board board = boardRepository.findById(boardId).get();
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
         boardRepository.delete(board);
     }
 
@@ -70,7 +74,7 @@ public class BoardService {
         Board board = findBoard(boardId);
 
         if (boardInvitationRepository.existsByBoardIdAndUserId(boardId, reqDto.getUserId())){
-            throw new IllegalArgumentException("이미 초대 되었습니다. ");
+            throw new BusinessException(ErrorCode.BOARD_INVITE_ALREADY_MEMBER);
         }
         userRepository.findById(reqDto.getUserId())
                 .ifPresent(user -> boardInvitationRepository.save(new BoardInvitation(user, board)));
@@ -78,7 +82,7 @@ public class BoardService {
 
     public Board findBoard(Long id){
         return boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
     }
 
     public boolean canCreateCard(Long boardId, Long userId) {
