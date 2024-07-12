@@ -7,12 +7,8 @@ import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +26,8 @@ public class UserService {
     // 사용자 프로필 수정
     @Transactional
     public ProfileUpdateResDto updateProfile(User user, ProfileUpdateReqDto profileUpdateReqDto) {
-        user.update(profileUpdateReqDto);
+        User users = getUser(user);
+        users.update(profileUpdateReqDto);
         return new ProfileUpdateResDto(user);
     }
 
@@ -38,22 +35,31 @@ public class UserService {
     @Transactional
     public PasswordUpdateResDto updatePassword(User user, PasswordUpdateReqDto passwordUpdateReqDto) {
 
+        User users = getUser(user);
+        String password = users.getPassword();
+
         String currentPassword = passwordUpdateReqDto.getCurrentPassword();
         String newPassword = passwordUpdateReqDto.getNewPassword();
 
         // 현재 비밀번호가 사용자의 비밀번호와 맞는지 검증
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(currentPassword, password)) {
             throw new BusinessException(ErrorCode.PASSWORD_INCORRECT);
         }
 
         // 변경할 비밀번호와 현재 비밀번호가 동일한지 검증
-        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+        if (passwordEncoder.matches(newPassword, password)) {
             throw new BusinessException(ErrorCode.PASSWORD_INCORRECT);
         }
 
         // 변경할 비밀번호로 수정
-        user.passwordUpdate(passwordEncoder.encode(newPassword));
+        users.passwordUpdate(passwordEncoder.encode(newPassword));
 
         return new PasswordUpdateResDto(user);
+    }
+
+    private User getUser(User user) {
+        User users = userRepository.findByUsername(user.getUsername()).orElseThrow(
+                () -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return users;
     }
 }

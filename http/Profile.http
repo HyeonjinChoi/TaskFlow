@@ -7,7 +7,7 @@ Authorization: {{access_token}}
 
 {
   "nickname": "수정된 닉네임",
-  "instroduction": "수정된 한줄 내용"
+  "introduction": "수정된 한줄 내용"
 }
 
 ### 프로필 조회

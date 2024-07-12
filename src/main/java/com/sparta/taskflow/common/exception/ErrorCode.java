@@ -20,6 +20,7 @@ public enum ErrorCode {
 	USER_BLOCKED(HttpStatus.BAD_GATEWAY, "회원탈퇴한 유저입니다."),
 	FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "아이디나 비밀번호가 정확하지 않습니다."),
 	PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "현재 비밀번호와 사용자의 비밀번호가 일치하지 않습니다."),
+	PASSWORD_REUSED(HttpStatus.BAD_REQUEST, "동일한 비밀번호로는 변경하실 수 없습니다."),
 
 	// 보드
 	BOARD_CREATE_MISSING_DATA(HttpStatus.BAD_REQUEST, "보드 이름과 한 줄 설명은 필수입니다."),
