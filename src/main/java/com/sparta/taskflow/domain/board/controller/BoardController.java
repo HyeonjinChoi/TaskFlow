@@ -18,7 +18,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto) {
         BoardResDto responseDto = boardService.createBoard(reqDto);
@@ -43,7 +43,7 @@ public class BoardController {
                 , responseDto));
     }
 
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PutMapping("/{boardId}")
     public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardReqDto reqDto) {
         BoardResDto responseDto = boardService.updateBoard(boardId, reqDto);
@@ -52,7 +52,7 @@ public class BoardController {
                 , responseDto));
     }
 
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @DeleteMapping("/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
@@ -61,7 +61,7 @@ public class BoardController {
                 , null));
     }
 
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping("/{boardId}/invitations")
     public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto) {
         boardService.inviteUser(boardId, reqDto);
