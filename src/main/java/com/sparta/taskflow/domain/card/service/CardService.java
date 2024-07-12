@@ -104,7 +104,7 @@ public class CardService {
 		Card card = cardRepository.findById(cardId)
 			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
 
-		if (!Objects.equals(card.getUser().getUserId(), user.getUserId())) {
+		if (!Objects.equals(card.getUser().getId(), user.getId())) {
 			throw new IllegalArgumentException("사용자 권한이 없습니다.");
 		}
 
@@ -121,7 +121,7 @@ public class CardService {
 		Section newSection = sectionRepository.findById(updateCardPositionDto.getSectionId())
 			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
 
-		if (!Objects.equals(card.getUser().getUserId(), updateCardPositionDto.getUserId())) {
+		if (!Objects.equals(card.getUser().getId(), updateCardPositionDto.getUserId())) {
 			throw new IllegalArgumentException("사용자 권한이 없습니다.");
 		}
 
