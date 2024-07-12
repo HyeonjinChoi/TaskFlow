@@ -52,14 +52,15 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 조회에 성공하였습니다.", sections));
 	}
 
-	@PutMapping("/sections")
-	public ResponseEntity<CommonDto<Void>> updateSectionPosition(
-		@RequestBody UpdateSectionPositionDto updateSectionPositionDto) {
+	@PutMapping("/cards/{cardId}")
+	public ResponseEntity<CommonDto<SectionResponseDto>> updateSection(
+		@PathVariable Long cardId,
+		@RequestBody SectionRequestDto cardRequestDto) {
 
-		sectionService.updateSectionPosition(updateSectionPositionDto);
+		SectionResponseDto card = sectionService.updateSection(cardId, cardRequestDto);
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 순서 변경에 성공하였습니다.", null));
+			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 수정에 성공하였습니다.", card));
 	}
 
 	@DeleteMapping("/sections/{sectionId}")
@@ -71,5 +72,15 @@ public class SectionController {
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "섹션 삭제에 성공하였습니다.", null));
+	}
+
+	@PutMapping("/sections")
+	public ResponseEntity<CommonDto<Void>> updateSectionPosition(
+		@RequestBody UpdateSectionPositionDto updateSectionPositionDto) {
+
+		sectionService.updateSectionPosition(updateSectionPositionDto);
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 순서 변경에 성공하였습니다.", null));
 	}
 }

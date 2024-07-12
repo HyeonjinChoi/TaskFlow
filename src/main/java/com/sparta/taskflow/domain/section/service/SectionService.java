@@ -15,6 +15,7 @@ import com.sparta.taskflow.domain.board.repository.BoardRepository;
 import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
 import com.sparta.taskflow.domain.section.dto.SectionRequestDto;
 import com.sparta.taskflow.domain.section.dto.SectionResponseDto;
+import com.sparta.taskflow.domain.section.dto.SectionUpdateRequestDto;
 import com.sparta.taskflow.domain.section.dto.UpdateSectionPositionDto;
 import com.sparta.taskflow.domain.section.entity.Section;
 import com.sparta.taskflow.domain.section.repository.SectionRepository;
@@ -67,6 +68,33 @@ public class SectionService {
 		return new PageImpl<>(sectionDtos, pageable, sections.getTotalElements());
 	}
 
+	public SectionResponseDto updateSection(
+		Long sectionId,
+		SectionUpdateRequestDto requestDto) {
+
+		Section section = sectionRepository.findById(sectionId)
+			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+
+		section.update(requestDto.getContents());
+
+		return new SectionResponseDto(sectionRepository.save(section));
+	}
+
+	@Transactional
+	public void deleteSection(
+		Long sectionId,
+		User user) {
+
+		Section section = sectionRepository.findById(sectionId)
+			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+
+		if (!Objects.equals(section.getUser().getUserId(), user.getUserId())) {
+			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+		}
+
+		sectionRepository.delete(section);
+	}
+
 	@Transactional
 	public void updateSectionPosition(
 		UpdateSectionPositionDto updateSectionPositionDto) {
@@ -95,21 +123,6 @@ public class SectionService {
 		});
 
 		sectionRepository.saveAll(sections);
-	}
-
-	@Transactional
-	public void deleteSection(
-		Long sectionId,
-		User user) {
-
-		Section section = sectionRepository.findById(sectionId)
-			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
-
-		if (!Objects.equals(section.getUser().getUserId(), user.getUserId())) {
-			throw new IllegalArgumentException("사용자 권한이 없습니다.");
-		}
-
-		sectionRepository.delete(section);
 	}
 
 	private Board findBoard(Long boardId) {
