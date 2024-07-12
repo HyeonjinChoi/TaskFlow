@@ -88,7 +88,7 @@ public class SectionService {
 		Section section = sectionRepository.findById(sectionId)
 			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
 
-		if (!Objects.equals(section.getUser().getUserId(), user.getUserId())) {
+		if (!Objects.equals(section.getUser().getId(), user.getId())) {
 			throw new IllegalArgumentException("사용자 권한이 없습니다.");
 		}
 
@@ -102,7 +102,7 @@ public class SectionService {
 		Section section = sectionRepository.findById(updateSectionPositionDto.getSectionId())
 			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
 
-		if (!Objects.equals(section.getUser().getUserId(), updateSectionPositionDto.getUserId())) {
+		if (!Objects.equals(section.getUser().getId(), updateSectionPositionDto.getUserId())) {
 			throw new IllegalArgumentException("사용자 권한이 없습니다.");
 		}
 
