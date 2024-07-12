@@ -3,7 +3,6 @@ package com.sparta.taskflow.domain.comment.dto;
 import lombok.Getter;
 
 @Getter
-public class CommentRequestDto {
-    private String contents;
+public class CommentDeleteReqestDto {
     private Long cardId;
 }
