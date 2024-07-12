@@ -6,6 +6,7 @@ import com.sparta.taskflow.domain.comment.dto.CommentRequestDto;
 import com.sparta.taskflow.domain.comment.dto.CommentResponseDto;
 import com.sparta.taskflow.domain.comment.entity.Comment;
 import com.sparta.taskflow.domain.comment.repository.CommentRepository;
+import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ public class CommentService {
         );
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 카드입니다.")
+                () -> new IllegalArgumentException("존재하지 않는 댓 글입니다.")
         );
 
         commentRepository.delete(comment);
