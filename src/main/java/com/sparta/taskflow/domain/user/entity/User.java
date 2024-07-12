@@ -41,6 +41,10 @@ public class User extends Timestamped {
 
     private String refreshToken;
 
+    public void addRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 
     //:::::::::::// ENUM //::::::::::://
     public enum Role{
@@ -50,6 +54,15 @@ public class User extends Timestamped {
     public enum Status{
         NORMAL,
         DELETED
+    }
+
+    public void deleteRefreshToken() {
+        this.refreshToken = null;
+    }
+
+    public void signout() {
+        this.status = Status.DELETED;
+        deleteRefreshToken();
     }
 
     public boolean isBlocked(){
