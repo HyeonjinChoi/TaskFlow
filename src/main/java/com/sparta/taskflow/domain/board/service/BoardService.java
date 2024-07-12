@@ -2,7 +2,10 @@ package com.sparta.taskflow.domain.board.service;
 
 import com.sparta.taskflow.domain.board.dto.*;
 import com.sparta.taskflow.domain.board.entity.Board;
+import com.sparta.taskflow.domain.board.entity.BoardInvitation;
+import com.sparta.taskflow.domain.board.repository.BoardInvitationRepository;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
+import com.sparta.taskflow.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,8 +17,8 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-
-    // 보드 생성
+    private final BoardInvitationRepository boardInvitationRepository;
+    private final UserRepository userRepository;
     @Transactional
     public BoardResDto createBoard(BoardReqDto reqDto) {
         if (reqDto.getName() == null || reqDto.getDescription() == null) {
@@ -63,10 +66,22 @@ public class BoardService {
     }
 
     public void inviteUser(Long boardId, BoardInviteReqDto reqDto) {
+
+        Board board = findBoard(boardId);
+
+        if (boardInvitationRepository.existsByBoardIdAndUserId(boardId, reqDto.getUserId())){
+            throw new IllegalArgumentException("이미 초대 되었습니다. ");
+        }
+        userRepository.findById(reqDto.getUserId())
+                .ifPresent(user -> boardInvitationRepository.save(new BoardInvitation(user, board)));
     }
 
     public Board findBoard(Long id){
         return boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다."));
+    }
+
+    public boolean canCreateCard(Long boardId, Long userId) {
+        return boardInvitationRepository.existsByBoardIdAndUserId(boardId, userId);
     }
 }
