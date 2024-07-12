@@ -7,7 +7,6 @@ import com.sparta.taskflow.domain.comment.dto.CommentRequestDto;
 import com.sparta.taskflow.domain.comment.dto.CommentResponseDto;
 import com.sparta.taskflow.domain.comment.service.CommentService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
-import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

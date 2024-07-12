@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProfileUpdateReqDto {
+
     private String nickname;
 
     private String instroduction;

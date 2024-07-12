@@ -45,7 +45,6 @@ public class User extends Timestamped {
         this.refreshToken = refreshToken;
     }
 
-
     //:::::::::::// ENUM //::::::::::://
     public enum Role{
         USER,

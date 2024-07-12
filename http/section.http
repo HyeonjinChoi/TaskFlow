@@ -1,0 +1,38 @@
+### 섹션 생성
+POST localhost:8080/api/sections
+Content-Type: application/json
+
+{
+  "contents": "섹션 내용",
+  "userId": 1,
+  "boardId": 1
+}
+
+### 섹션 조회
+GET localhost:8080/api/sections
+Content-Type: application/json
+
+{
+  "boardId": 1
+}
+
+### 섹션 수정
+PUT localhost:8080/api/sections/1
+Content-Type: application/json
+
+{
+  "contents": "섹션 내용"
+}
+
+### 섹션 삭제
+DELETE localhost:8080/api/sections/1
+
+### 섹션 이동
+PUT localhost:8080/api/sections/move
+Content-Type: application/json
+
+{
+  "newPosition": 1,
+  "userId": 1,
+  "sectionId": 1
+}
