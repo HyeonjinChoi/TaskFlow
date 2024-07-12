@@ -53,7 +53,7 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 조회에 성공하였습니다.", sections));
 	}
 
-	@PutMapping("/cards/{cardId}")
+	@PutMapping("/sections/{sectionId}")
 	public ResponseEntity<CommonDto<SectionResponseDto>> updateSection(
 		@PathVariable Long cardId,
 		@RequestBody SectionUpdateRequestDto sectionUpdateRequestDto) {
@@ -75,7 +75,7 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "섹션 삭제에 성공하였습니다.", null));
 	}
 
-	@PutMapping("/sections")
+	@PutMapping("/sections/move")
 	public ResponseEntity<CommonDto<Void>> updateSectionPosition(
 		@RequestBody UpdateSectionPositionDto updateSectionPositionDto) {
 

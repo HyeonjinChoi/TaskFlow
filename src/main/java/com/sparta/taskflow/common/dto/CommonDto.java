@@ -14,4 +14,3 @@ public class CommonDto<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 }
-
