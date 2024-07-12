@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sparta.taskflow.common.size.PageSize;
 import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
 import com.sparta.taskflow.domain.card.dto.CardRequestDto;
@@ -19,7 +20,6 @@ import com.sparta.taskflow.domain.card.dto.UpdateCardPositionDto;
 import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.card.repository.CardRepository;
 import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
-import com.sparta.taskflow.domain.section.dto.SectionResponseDto;
 import com.sparta.taskflow.domain.section.entity.Section;
 import com.sparta.taskflow.domain.section.repository.SectionRepository;
 import com.sparta.taskflow.domain.user.entity.User;
@@ -66,7 +66,7 @@ public class CardService {
 		int page) {
 
 		Board board = findBoard(boardIdRequestDto.getBoardId());
-		Pageable pageable = PageRequest.of(page, 5);
+		Pageable pageable = PageRequest.of(page, PageSize.CARD.getSize());
 
 		Page<Card> cards = cardRepository.findByBoard(board, pageable);
 		List<CardResponseDto> cardDtos = cards.stream()

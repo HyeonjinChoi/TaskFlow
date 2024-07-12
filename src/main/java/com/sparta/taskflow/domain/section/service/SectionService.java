@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sparta.taskflow.common.size.PageSize;
 import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
 import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
@@ -62,7 +63,7 @@ public class SectionService {
 		int page) {
 
 		Board board = findBoard(boardIdRequestDto.getBoardId());
-		Pageable pageable = PageRequest.of(page, 4);
+		Pageable pageable = PageRequest.of(page, PageSize.SECTION.getSize());
 
 		Page<Section> sections = sectionRepository.findByBoard(board, pageable);
 		List<SectionResponseDto> sectionDtos = sections.stream()
