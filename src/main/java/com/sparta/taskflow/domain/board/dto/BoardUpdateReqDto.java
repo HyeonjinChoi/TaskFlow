@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BoardCreateReqDto {
+public class BoardUpdateReqDto {
     private String name;
     private String description;
 }
