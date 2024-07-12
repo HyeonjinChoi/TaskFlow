@@ -1,6 +1,7 @@
 package com.sparta.taskflow.domain.card.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -91,6 +92,21 @@ public class CardService {
 		card.update(requestDto.getTitle(), requestDto.getContents(), requestDto.getDueDate());
 
 		return new CardResponseDto(cardRepository.save(card));
+	}
+
+	@Transactional
+	public void deleteCard(
+		Long cardId,
+		User user) {
+
+		Card card = cardRepository.findById(cardId)
+			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
+
+		if (!Objects.equals(card.getUser().getUserId(), user.getUserId())) {
+			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+		}
+
+		cardRepository.delete(card);
 	}
 
 	private Board findBoard(Long boardId) {
