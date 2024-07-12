@@ -3,8 +3,6 @@ package com.sparta.taskflow.domain.section.dto;
 import lombok.Getter;
 
 @Getter
-public class SectionRequestDto {
+public class SectionUpdateRequestDto {
 	private String contents;
-	private Long userId;
-	private Long boardId;
 }

@@ -3,10 +3,9 @@ package com.sparta.taskflow.domain.section.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sparta.taskflow.common.util.Timestamped;
 import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.card.entity.Card;
-import com.sparta.taskflow.domain.comment.entity.Comment;
-import com.sparta.taskflow.common.util.Timestamped;
 import com.sparta.taskflow.domain.user.entity.User;
 
 import jakarta.persistence.CascadeType;
@@ -34,9 +33,6 @@ public class Section extends Timestamped {
 	@Column(name = "section_id")
 	private Long sectionId;
 
-	@Column(name = "title")
-	private String title;
-
 	@Column(name = "contents")
 	private String contents;
 
@@ -55,13 +51,16 @@ public class Section extends Timestamped {
 	private List<Card> cards = new ArrayList<>();
 
 	@Builder
-	public Section(String title, String contents, int position, User user, Board board, List<Card> cards) {
-		this.title = title;
+	public Section(String contents, int position, User user, Board board, List<Card> cards) {
 		this.contents = contents;
 		this.position = position;
 		this.user = user;
 		this.board = board;
 		this.cards = cards != null ? cards : new ArrayList<>();
+	}
+
+	public void update(String contents) {
+		this.contents = contents;
 	}
 
 	public void updatePosition(int newPosition) {

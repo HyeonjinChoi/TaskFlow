@@ -1,8 +1,11 @@
 package com.sparta.taskflow.domain.user.repository;
 
+import com.sparta.taskflow.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.sparta.taskflow.domain.user.entity.User;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+    boolean existsByEmailOrNicknameOrUsername(String username , String email, String nickname);
 }
