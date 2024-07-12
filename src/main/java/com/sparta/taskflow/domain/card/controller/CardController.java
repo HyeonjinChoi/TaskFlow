@@ -1,9 +1,11 @@
 package com.sparta.taskflow.domain.card.controller;
 
+import com.sparta.taskflow.domain.board.service.BoardService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +34,9 @@ import lombok.RequiredArgsConstructor;
 public class CardController {
 
 	private final CardService cardService;
+	private final BoardService boardService;
 
+	@PreAuthorize("@boardService.canCreateCard(#requestDto.boardId, authentication.principal.user.id)")
 	@PostMapping
 	public ResponseEntity<CommonDto<CardResponseDto>> createCard(
 		@RequestBody CardRequestDto requestDto,
@@ -66,6 +70,7 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 단건 조회에 성공하였습니다.", card));
 	}
 
+	@PreAuthorize("@boardService.canCreateCard(#requestDto.boardId, authentication.principal.user.id)")
 	@PutMapping("/{cardId}")
 	public ResponseEntity<CommonDto<CardResponseDto>> updateCard(
 		@PathVariable Long cardId,
@@ -77,6 +82,7 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 수정에 성공하였습니다.", card));
 	}
 
+	@PreAuthorize("@boardService.canCreateCard(#requestDto.boardId, authentication.principal.user.id)")
 	@DeleteMapping("/{cardId}")
 	public ResponseEntity<CommonDto<Void>> deleteCard (
 		@PathVariable Long cardId,
@@ -88,6 +94,7 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다.", null));
 	}
 
+	@PreAuthorize("@boardService.canCreateCard(#requestDto.boardId, authentication.principal.user.id)")
 	@PutMapping("/move")
 	public ResponseEntity<CommonDto<Void>> updateCardPosition(
 		@RequestBody UpdateCardPositionDto updateCardPositionDto) {
