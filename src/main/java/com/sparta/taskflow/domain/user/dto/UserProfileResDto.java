@@ -7,7 +7,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 public class UserProfileResDto {
     private Long id;
     private String nickname;

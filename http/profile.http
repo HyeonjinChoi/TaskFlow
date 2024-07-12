@@ -6,8 +6,8 @@ Content-Type: application/json
 Authorization: {{access_token}}
 
 {
-  "nickname": "수정된 닉네임",
-  "instroduction": "수정된 한줄 내용"
+  "nickname": "수정된 닉네임12",
+  "introduction": "수정된 한줄 내용12"
 }
 
 ### 프로필 조회
