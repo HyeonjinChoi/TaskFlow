@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/boards")
 public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/boards")
+    @PostMapping
     public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto) {
         BoardResDto responseDto = boardService.createBoard(reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -25,7 +25,7 @@ public class BoardController {
                 , responseDto));
     }
 
-    @GetMapping("/boards")
+    @GetMapping
     public ResponseEntity<?> getBoards() {
         List<BoardResDto> responseDto = boardService.getBoards();
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -33,7 +33,7 @@ public class BoardController {
                 , responseDto));
     }
 
-    @GetMapping("/boards/{boardId}")
+    @GetMapping("/{boardId}")
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
         BoardResDto responseDto = boardService.getBoard(boardId);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -41,7 +41,7 @@ public class BoardController {
                 , responseDto));
     }
 
-    @PutMapping("/boards/{boardId}")
+    @PutMapping("/{boardId}")
     public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardReqDto reqDto) {
         BoardResDto responseDto = boardService.updateBoard(boardId, reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -49,7 +49,7 @@ public class BoardController {
                 , responseDto));
     }
 
-    @DeleteMapping("/boards/{boardId}")
+    @DeleteMapping("/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -57,7 +57,7 @@ public class BoardController {
                 , null));
     }
 
-    @PostMapping("/boards/{boardId}/invitations")
+    @PostMapping("/{boardId}/invitations")
     public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto) {
         boardService.inviteUser(boardId, reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()

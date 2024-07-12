@@ -1,8 +1,10 @@
 package com.sparta.taskflow.domain.card.controller;
 
+import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,23 +28,23 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/cards")
 public class CardController {
 
 	private final CardService cardService;
 
-	@PostMapping("/cards")
+	@PostMapping
 	public ResponseEntity<CommonDto<CardResponseDto>> createCard(
 		@RequestBody CardRequestDto requestDto,
-		User user) {
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		CardResponseDto card = cardService.createCard(requestDto, user);
+		CardResponseDto card = cardService.createCard(requestDto, userDetails.getUser());
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(new CommonDto<>(HttpStatus.CREATED.value(), "카드 생성에 성공하였습니다.", card));
 	}
 
-	@GetMapping("/cards")
+	@GetMapping
 	public ResponseEntity<CommonDto<Page<CardResponseDto>>> getCards(
 		@RequestBody BoardIdRequestDto boardIdRequestDto,
 		@RequestParam int page) {
@@ -54,7 +56,7 @@ public class CardController {
 
 	}
 
-	@GetMapping("/cards/{cardId}")
+	@GetMapping("/{cardId}")
 	public ResponseEntity<CommonDto<CardResponseDto>> getCard(
 		@PathVariable Long cardId) {
 
@@ -64,7 +66,7 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 단건 조회에 성공하였습니다.", card));
 	}
 
-	@PutMapping("/cards/{cardId}")
+	@PutMapping("/{cardId}")
 	public ResponseEntity<CommonDto<CardResponseDto>> updateCard(
 		@PathVariable Long cardId,
 		@RequestBody CardUpdateRequestDto requestDto) {
@@ -75,18 +77,18 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 수정에 성공하였습니다.", card));
 	}
 
-	@DeleteMapping("/cards/{cardId}")
+	@DeleteMapping("/{cardId}")
 	public ResponseEntity<CommonDto<Void>> deleteCard (
 		@PathVariable Long cardId,
-		User user) {
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		cardService.deleteCard(cardId, user);
+		cardService.deleteCard(cardId, userDetails.getUser());
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다.", null));
 	}
 
-	@PutMapping("/cards/move")
+	@PutMapping("/move")
 	public ResponseEntity<CommonDto<Void>> updateCardPosition(
 		@RequestBody UpdateCardPositionDto updateCardPositionDto) {
 

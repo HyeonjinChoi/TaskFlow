@@ -1,48 +1,35 @@
 package com.sparta.taskflow.domain.section.controller;
 
+import com.sparta.taskflow.common.dto.CommonDto;
+import com.sparta.taskflow.domain.section.dto.*;
+import com.sparta.taskflow.domain.section.service.SectionService;
+import com.sparta.taskflow.security.principal.UserDetailsImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.sparta.taskflow.common.dto.CommonDto;
-import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
-import com.sparta.taskflow.domain.section.dto.SectionRequestDto;
-import com.sparta.taskflow.domain.section.dto.SectionResponseDto;
-import com.sparta.taskflow.domain.section.dto.SectionUpdateRequestDto;
-import com.sparta.taskflow.domain.section.dto.UpdateSectionPositionDto;
-import com.sparta.taskflow.domain.section.service.SectionService;
-import com.sparta.taskflow.domain.user.entity.User;
-
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/sections")
 public class SectionController {
 
 	private final SectionService sectionService;
 
-	@PostMapping("/sections")
+	@PostMapping
 	public ResponseEntity<CommonDto<SectionResponseDto>> createSection (
-		@RequestBody SectionRequestDto requestDto,
-		User user) {
+			@RequestBody SectionRequestDto requestDto,
+			@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		SectionResponseDto responseDto = sectionService.createSection(requestDto, user);
+		SectionResponseDto responseDto = sectionService.createSection(requestDto, userDetails.getUser());
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(new CommonDto<>(HttpStatus.CREATED.value(), "섹션 생성에 성공하였습니다.", responseDto));
 	}
 
-	@GetMapping("/sections")
+	@GetMapping
 	public ResponseEntity<CommonDto<Page<SectionResponseDto>>> getSections (
 		@RequestBody BoardIdRequestDto boardIdRequestDto,
 		@RequestParam int page) {
@@ -53,7 +40,7 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 조회에 성공하였습니다.", sections));
 	}
 
-	@PutMapping("/sections/{sectionId}")
+	@PutMapping("/{sectionId}")
 	public ResponseEntity<CommonDto<SectionResponseDto>> updateSection(
 		@PathVariable Long cardId,
 		@RequestBody SectionUpdateRequestDto sectionUpdateRequestDto) {
@@ -64,18 +51,18 @@ public class SectionController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 수정에 성공하였습니다.", card));
 	}
 
-	@DeleteMapping("/sections/{sectionId}")
+	@DeleteMapping("/{sectionId}")
 	public ResponseEntity<CommonDto<Void>> deleteSection (
 		@PathVariable Long sectionId,
-		User user) {
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		sectionService.deleteSection(sectionId, user);
+		sectionService.deleteSection(sectionId, userDetails.getUser());
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "섹션 삭제에 성공하였습니다.", null));
 	}
 
-	@PutMapping("/sections/move")
+	@PutMapping("/move")
 	public ResponseEntity<CommonDto<Void>> updateSectionPosition(
 		@RequestBody UpdateSectionPositionDto updateSectionPositionDto) {
 

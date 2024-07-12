@@ -5,17 +5,12 @@ import com.sparta.taskflow.domain.auth.dto.SignoutRequestDto;
 import com.sparta.taskflow.domain.auth.dto.SignupRequestDto;
 import com.sparta.taskflow.domain.auth.service.AuthService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
-import com.sparta.taskflow.security.service.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.http.HttpResponse;
-import java.nio.file.attribute.UserPrincipal;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -48,3 +43,4 @@ public class AuthController {
         return ResponseEntity.ok().body(authService.logout(userPrincipal.getUser()));
     }
 }
+

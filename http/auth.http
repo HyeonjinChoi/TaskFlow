@@ -1,0 +1,34 @@
+### 회원가입
+POST localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "username",
+  "password": "Password@1234",
+  "email": "test@gmadil.com",
+  "introduction": "태스트 단어",
+  "nickname": "닉네임"
+}
+
+### 로그인
+POST localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "username",
+  "password": "Password@1234"
+}
+
+
+### 로그아웃
+DELETE localhost:8080/api/auth/logout
+Content-Type: application/json
+
+
+### 회원탈퇴
+DELETE localhost:8080/api/auth/signout
+Content-Type: application/json
+
+{
+  "password": "password@1234"
+}
