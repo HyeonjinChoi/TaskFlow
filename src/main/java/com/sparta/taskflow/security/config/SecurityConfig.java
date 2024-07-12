@@ -19,6 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,7 +29,6 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,6 +47,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http.csrf(AbstractHttpConfigurer::disable);
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
@@ -56,8 +59,9 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests(requests -> requests
+                .requestMatchers("/").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "api/auth/signup").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                 .anyRequest().authenticated()
         );
 

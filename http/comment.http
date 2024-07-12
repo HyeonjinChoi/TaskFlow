@@ -1,0 +1,33 @@
+### 댓글 생성
+POST localhost:8080/api/comments
+Content-Type: application/json
+
+{
+  "contents": "댓글 내용",
+  "cardId": 1
+}
+
+### 댓글 수정
+PUT localhost:8080/api/comments/1
+Content-Type: application/json
+
+{
+  "contents": "댓글 내용",
+  "cardId": 1
+}
+
+### 댓글 삭제
+DELETE localhost:8080/api/comments/1
+Content-Type: application/json
+
+{
+  "cardId": 1
+}
+
+### 댓글 조회
+GET localhost:8080/api/comments/1
+Content-Type: application/json
+
+{
+  "cardId": 1
+}

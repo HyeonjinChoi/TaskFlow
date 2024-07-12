@@ -77,7 +77,6 @@ public class CommentService {
 
 
 
-
     public List<CommentResponseDto> getComments(CommentDeleteReqestDto requestDto, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 

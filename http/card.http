@@ -1,0 +1,39 @@
+### 카드 생성
+POST localhost:8080/api/cards
+Content-Type: application/json
+
+{
+  "title": "카드 타이틀",
+  "contents": "카드 내용",
+  "userId": 1,
+  "boardId": 1,
+  "sectionId": 1
+}
+
+### 카드 전체 조회
+GET localhost:8080/api/cards
+Content-Type: application/json
+
+### 카드 수정
+POST localhost:8080/api/cards/1
+Content-Type: application/json
+
+{
+  "title": "카드 타이틀",
+  "contents": "카드 내용"
+}
+
+### 카드 특정 조회
+POST localhost:8080/api/cards/1
+
+
+### 카드 이동
+POST localhost:8080/api/cards/move
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "sectionId": 1,
+  "cardId": 1,
+  "newPosition": 2
+}
