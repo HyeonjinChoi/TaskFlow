@@ -55,7 +55,7 @@ public class AuthService {
 
     public String signout(SignoutRequestDto requestDto, User user) {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호와 사용자의 비밀번호가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.FAIL_AUTHENTICATION);
         }
         user.signout();
         return "회원탈퇴가 완료되었습니다. 그 동안 감사했습니다.";

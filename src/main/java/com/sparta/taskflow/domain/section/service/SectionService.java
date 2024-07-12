@@ -3,6 +3,8 @@ package com.sparta.taskflow.domain.section.service;
 import java.util.List;
 import java.util.Objects;
 
+import com.sparta.taskflow.common.exception.BusinessException;
+import com.sparta.taskflow.common.exception.ErrorCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +39,7 @@ public class SectionService {
 		Board board = findBoard(requestDto.getBoardId());
 
 		if (sectionRepository.existsByContentsAndBoard(requestDto.getContents(), board)) {
-			throw new IllegalArgumentException("같은 섹션이 존재합니다.");
+			throw new BusinessException(ErrorCode.SECTION_ALREADY_EXISTS);
 		}
 
 		int position = sectionRepository.countByBoard(board);
@@ -73,7 +75,7 @@ public class SectionService {
 		SectionUpdateRequestDto requestDto) {
 
 		Section section = sectionRepository.findById(sectionId)
-			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+			.orElseThrow(() -> new BusinessException(ErrorCode.SECTION_NOT_FOUND));
 
 		section.update(requestDto.getContents());
 
@@ -86,10 +88,10 @@ public class SectionService {
 		User user) {
 
 		Section section = sectionRepository.findById(sectionId)
-			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+			.orElseThrow(() -> new BusinessException(ErrorCode.SECTION_NOT_FOUND));
 
 		if (!Objects.equals(section.getUser().getId(), user.getId())) {
-			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+			throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION);
 		}
 
 		sectionRepository.delete(section);
@@ -100,10 +102,10 @@ public class SectionService {
 		UpdateSectionPositionDto updateSectionPositionDto) {
 
 		Section section = sectionRepository.findById(updateSectionPositionDto.getSectionId())
-			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+			.orElseThrow(() -> new BusinessException(ErrorCode.SECTION_NOT_FOUND));
 
 		if (!Objects.equals(section.getUser().getId(), updateSectionPositionDto.getUserId())) {
-			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+			throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION);
 		}
 
 		int newPosition = updateSectionPositionDto.getNewPosition();
@@ -127,7 +129,7 @@ public class SectionService {
 
 	private Board findBoard(Long boardId) {
 		return boardRepository.findById(boardId).orElseThrow(() ->
-			new IllegalArgumentException("보드가 존재하지 않습니다.")
+			new BusinessException(ErrorCode.BOARD_NOT_FOUND)
 		);
 	}
 }

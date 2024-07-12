@@ -1,6 +1,8 @@
 package com.sparta.taskflow.domain.comment.service;
 
 import com.sparta.taskflow.common.dto.CommonDto;
+import com.sparta.taskflow.common.exception.BusinessException;
+import com.sparta.taskflow.common.exception.ErrorCode;
 import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.card.repository.CardRepository;
 import com.sparta.taskflow.domain.comment.dto.CommentDeleteReqestDto;
@@ -42,7 +44,7 @@ public class CommentService {
     }
 
     public CommentResponseDto updateComment(CommentRequestDto requestDto, User user,  Long commentId) {
-        Card card = getCard(requestDto.getCardId());
+        if(!cardRepository.existsById(requestDto.getCardId())) throw new BusinessException(ErrorCode.CARD_NOT_FOUND);
 
         Comment comment = getCommet(commentId);
 
@@ -53,7 +55,7 @@ public class CommentService {
 
 
     public CommentResponseDto deleteComment(CommentDeleteReqestDto requestDto, User user, Long commentId) {
-        Card card = getCard(requestDto.getCardId());
+        if(!cardRepository.existsById(requestDto.getCardId())) throw new BusinessException(ErrorCode.CARD_NOT_FOUND);
 
         Comment comment = getCommet(commentId);
 
@@ -63,15 +65,17 @@ public class CommentService {
 
     public Card getCard(Long cardId){
         return cardRepository.findById(cardId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 카드입니다.")
+                () -> new BusinessException(ErrorCode.CARD_NOT_FOUND)
         );
     }
 
     private Comment getCommet(Long commentId) {
         return commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 댓글입니다.")
+                () -> new BusinessException(ErrorCode.CARD_NOT_FOUND)
         );
     }
+
+
 
 
     public List<CommentResponseDto> getComments(CommentDeleteReqestDto requestDto, int page, int size) {
@@ -80,7 +84,7 @@ public class CommentService {
         Card card = getCard(requestDto.getCardId());
         Page<Comment> commentPage = commentRepository.findByCard(card, pageable);
         if (commentPage == null) {
-            throw new RuntimeException("Failed to retrieve comments for card");
+            throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
         }
         commentPage = commentRepository.findByCard(card, pageable);
 

@@ -3,6 +3,8 @@ package com.sparta.taskflow.domain.card.service;
 import java.util.List;
 import java.util.Objects;
 
+import com.sparta.taskflow.common.exception.BusinessException;
+import com.sparta.taskflow.common.exception.ErrorCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -42,7 +44,7 @@ public class CardService {
 		Section section = findSection(requestDto.getSectionId());
 
 		if (cardRepository.existsByTitleAndSection(requestDto.getTitle(), section)) {
-			throw new IllegalArgumentException("같은 카드가 존재합니다.");
+			throw new BusinessException(ErrorCode.CARD_ALREADY_EXISTS);
 		}
 
 		int position = cardRepository.countBySection(section);
@@ -79,7 +81,7 @@ public class CardService {
 	@Transactional(readOnly = true)
 	public CardResponseDto getCard(Long cardId) {
 		Card card = cardRepository.findById(cardId)
-			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
+			.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
 
 		return new CardResponseDto(card);
 	}
@@ -89,7 +91,7 @@ public class CardService {
 		CardUpdateRequestDto requestDto) {
 
 		Card card = cardRepository.findById(cardId)
-			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
+			.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
 
 		card.update(requestDto.getTitle(), requestDto.getContents(), requestDto.getDueDate());
 
@@ -102,10 +104,10 @@ public class CardService {
 		User user) {
 
 		Card card = cardRepository.findById(cardId)
-			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
+			.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
 
 		if (!Objects.equals(card.getUser().getId(), user.getId())) {
-			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+			throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION);
 		}
 
 		cardRepository.delete(card);
@@ -116,13 +118,12 @@ public class CardService {
 		UpdateCardPositionDto updateCardPositionDto) {
 
 		Card card = cardRepository.findById(updateCardPositionDto.getCardId())
-			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
+			.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
 		Section oldSection = card.getSection();
-		Section newSection = sectionRepository.findById(updateCardPositionDto.getSectionId())
-			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+		Section newSection = findSection(updateCardPositionDto.getSectionId());
 
 		if (!Objects.equals(card.getUser().getId(), updateCardPositionDto.getUserId())) {
-			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+			throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION);
 		}
 
 		List<Card> oldSectionCards = oldSection.getCards();
@@ -161,13 +162,13 @@ public class CardService {
 
 	private Board findBoard(Long boardId) {
 		return boardRepository.findById(boardId).orElseThrow(() ->
-			new IllegalArgumentException("보드가 존재하지 않습니다.")
+			new BusinessException(ErrorCode.BOARD_NOT_FOUND)
 		);
 	}
 
 	private Section findSection(Long sectionId) {
 		return sectionRepository.findById(sectionId).orElseThrow(() ->
-			new IllegalArgumentException("섹션이 존재하지 않습니다.")
+			new BusinessException(ErrorCode.SECTION_NOT_FOUND)
 		);
 	}
 }
