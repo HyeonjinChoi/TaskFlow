@@ -11,7 +11,7 @@ Content-Type: application/json
 }
 
 ### 로그인
-POST localhost:8080/api/auth/login
+POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
@@ -19,15 +19,29 @@ Content-Type: application/json
   "password": "Password@1234"
 }
 
+> {%
+    client.log(response);
+    const authorizationHeader = response.headers.valueOf('Authorization')
+    client.global.set("access_token", authorizationHeader)
+    client.log("Authorization header: " + authorizationHeader);
+%}
 
 ### 로그아웃
-DELETE localhost:8080/api/auth/logout
+POST http://localhost:8080/api/auth/logout
 Content-Type: application/json
+Authorization: {{access_token}}
+
+> {%
+    const authToken = client.global.get("authorization_token");
+    client.log("Request sent with authorization token: " + authToken);
+%}
+
 
 
 ### 회원탈퇴
-DELETE localhost:8080/api/auth/signout
+PUT localhost:8080/api/auth/signout
 Content-Type: application/json
+Authorization: {{access_token}}
 
 {
   "password": "password@1234"

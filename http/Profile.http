@@ -1,0 +1,27 @@
+
+
+### 프로필 수정
+PUT localhost:8080/api/users
+Content-Type: application/json
+Authorization: {{access_token}}
+
+{
+  "nickname": "수정된 닉네임",
+  "instroduction": "수정된 한줄 내용"
+}
+
+### 프로필 조회
+GET localhost:8080/api/users
+Authorization: {{access_token}}
+
+
+
+### 비밀번호 변경
+PUT localhost:8080/api/users/password
+Content-Type: application/json
+Authorization: {{access_token}}
+
+{
+  "currentPassword":"Password@1234",
+  "newPassword" : "Password@12345"
+}

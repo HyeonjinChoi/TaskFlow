@@ -18,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     // 사용자의 프로필 조회
-    @GetMapping("/{userId}")
+    @GetMapping
     public ResponseEntity<CommonDto<UserProfileResDto>> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserProfileResDto responseDto = userService.getProfile(userDetails.getUser());
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -27,7 +27,7 @@ public class UserController {
     }
 
     // 사용자의 프로필 수정
-    @PutMapping("/{userId}")
+    @PutMapping
     public ResponseEntity<CommonDto<ProfileUpdateResDto>> updateProfile(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ProfileUpdateReqDto reqDto) {
         ProfileUpdateResDto responseDto = userService.updateProfile(userDetails.getUser(), reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
@@ -35,7 +35,7 @@ public class UserController {
                 , responseDto));
     }
 
-    @PutMapping("/{userId}/password")
+    @PutMapping("/password")
     public ResponseEntity<CommonDto<PasswordUpdateResDto>> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PasswordUpdateReqDto reqDto) {
         PasswordUpdateResDto responseDto = userService.updatePassword(userDetails.getUser(), reqDto);
         return  ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()

@@ -42,10 +42,10 @@ public class SectionController {
 
 	@PutMapping("/{sectionId}")
 	public ResponseEntity<CommonDto<SectionResponseDto>> updateSection(
-		@PathVariable Long cardId,
+		@PathVariable Long sectionId,
 		@RequestBody SectionUpdateRequestDto sectionUpdateRequestDto) {
 
-		SectionResponseDto card = sectionService.updateSection(cardId, sectionUpdateRequestDto);
+		SectionResponseDto card = sectionService.updateSection(sectionId, sectionUpdateRequestDto);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 수정에 성공하였습니다.", card));

@@ -5,6 +5,7 @@ import com.sparta.taskflow.common.exception.ErrorCode;
 import com.sparta.taskflow.domain.auth.dto.LoginRequestDto;
 import com.sparta.taskflow.domain.auth.dto.SignoutRequestDto;
 import com.sparta.taskflow.domain.auth.dto.SignupRequestDto;
+import com.sparta.taskflow.domain.auth.dto.TokenResponseDto;
 import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
@@ -12,6 +13,7 @@ import com.sparta.taskflow.security.service.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -78,10 +80,10 @@ public class AuthService {
             String accessToken = jwtUtil.createAccessToken(user.getId(), user.getUsername(),user.getEmail(), user.getRole(), user.getStatus(), user.getNickname());
             String refreshToken = jwtUtil.createRefreshToken();
 
-            httpResponse.addHeader(JwtUtil.TOKEN_HEADER,accessToken);
             user.addRefreshToken(refreshToken);
+            httpResponse.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
 
-            return "로그인이 완료 되었습니다.";
+            return "로그인이 완료되었습니다.";
         } catch (LockedException e) {
             throw new BusinessException(ErrorCode.USER_BLOCKED);
         }  catch (AuthenticationException e) {
