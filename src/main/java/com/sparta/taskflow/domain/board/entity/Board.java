@@ -7,6 +7,7 @@ import com.sparta.taskflow.domain.section.entity.Section;
 import com.sparta.taskflow.domain.user.dto.ProfileUpdateReqDto;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.scheduling.config.Task;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Board extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -26,7 +26,6 @@ public class BoardController {
                 , responseDto));
     }
 
-    // 사용자의 프로필 수정
     @GetMapping("/boards")
     public ResponseEntity<?> getBoards() {
         List<BoardResDto> responseDto = boardService.getBoards();
