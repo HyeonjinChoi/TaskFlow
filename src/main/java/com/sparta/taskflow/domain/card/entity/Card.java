@@ -79,4 +79,13 @@ public class Card extends Timestamped {
 		this.contents = contents;
 		this.dueDate = dueDate;
 	}
+
+	public void updatePosition(int newPosition) {
+		this.position = newPosition;
+	}
+
+	public void updateSection(Section newSection, int newPosition) {
+		this.section = newSection;
+		this.position = newPosition;
+	}
 }

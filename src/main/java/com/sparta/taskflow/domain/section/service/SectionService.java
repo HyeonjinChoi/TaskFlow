@@ -94,7 +94,7 @@ public class SectionService {
 				s.updatePosition(s.getPosition() + 1);
 			} else if (newPosition > oldPosition && s.getPosition() <= newPosition && s.getPosition() > oldPosition) {
 				s.updatePosition(s.getPosition() - 1);
-			} else if (Objects.equals(s.getColumnId(), section.getColumnId())) {
+			} else if (Objects.equals(s.getSectionId(), section.getSectionId())) {
 				s.updatePosition(newPosition);
 			}
 		});

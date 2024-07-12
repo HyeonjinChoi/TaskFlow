@@ -14,6 +14,8 @@ import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
 import com.sparta.taskflow.domain.card.dto.CardRequestDto;
 import com.sparta.taskflow.domain.card.dto.CardResponseDto;
+import com.sparta.taskflow.domain.card.dto.CardUpdateRequestDto;
+import com.sparta.taskflow.domain.card.dto.UpdateCardPositionDto;
 import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.card.repository.CardRepository;
 import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
@@ -84,7 +86,7 @@ public class CardService {
 
 	public CardResponseDto updateCard(
 		Long cardId,
-		CardRequestDto requestDto) {
+		CardUpdateRequestDto requestDto) {
 
 		Card card = cardRepository.findById(cardId)
 			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
@@ -107,6 +109,54 @@ public class CardService {
 		}
 
 		cardRepository.delete(card);
+	}
+
+	@Transactional
+	public void updateCardPosition(
+		UpdateCardPositionDto updateCardPositionDto) {
+
+		Card card = cardRepository.findById(updateCardPositionDto.getCardId())
+			.orElseThrow(() -> new IllegalArgumentException("카드가 존재하지 않습니다."));
+		Section oldSection = card.getSection();
+		Section newSection = sectionRepository.findById(updateCardPositionDto.getSectionId())
+			.orElseThrow(() -> new IllegalArgumentException("섹션이 존재하지 않습니다."));
+
+		if (!Objects.equals(card.getUser().getUserId(), updateCardPositionDto.getUserId())) {
+			throw new IllegalArgumentException("사용자 권한이 없습니다.");
+		}
+
+		List<Card> oldSectionCards = oldSection.getCards();
+		List<Card> newSectionCards = newSection.getCards();
+		int newPosition = updateCardPositionDto.getNewPosition();
+
+		if (Objects.equals(oldSection.getSectionId(), newSection.getSectionId())) {
+			oldSectionCards.forEach(c -> {
+				if (c.getPosition() >= newPosition && c.getPosition() < card.getPosition()) {
+					c.updatePosition(c.getPosition() + 1);
+				} else if (c.getPosition() <= newPosition && c.getPosition() > card.getPosition()) {
+					c.updatePosition(c.getPosition() - 1);
+				}
+			});
+			card.updatePosition(newPosition);
+		} else {
+			oldSectionCards.remove(card);
+			oldSectionCards.forEach(c -> {
+				if (c.getPosition() > card.getPosition()) {
+					c.updatePosition(c.getPosition() - 1);
+				}
+			});
+
+			newSectionCards.add(card);
+			newSectionCards.forEach(c -> {
+				if (c.getPosition() >= newPosition) {
+					c.updatePosition(c.getPosition() + 1);
+				}
+			});
+			card.updateSection(newSection, newPosition);
+		}
+
+		cardRepository.saveAll(oldSectionCards);
+		cardRepository.saveAll(newSectionCards);
 	}
 
 	private Board findBoard(Long boardId) {

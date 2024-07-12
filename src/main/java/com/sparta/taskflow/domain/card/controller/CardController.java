@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.domain.card.dto.CardRequestDto;
 import com.sparta.taskflow.domain.card.dto.CardResponseDto;
+import com.sparta.taskflow.domain.card.dto.CardUpdateRequestDto;
+import com.sparta.taskflow.domain.card.dto.UpdateCardPositionDto;
 import com.sparta.taskflow.domain.card.service.CardService;
 import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
 import com.sparta.taskflow.domain.user.entity.User;
@@ -65,9 +67,9 @@ public class CardController {
 	@PutMapping("/cards/{cardId}")
 	public ResponseEntity<CommonDto<CardResponseDto>> updateCard(
 		@PathVariable Long cardId,
-		@RequestBody CardRequestDto cardRequestDto) {
+		@RequestBody CardUpdateRequestDto requestDto) {
 
-		CardResponseDto card = cardService.updateCard(cardId, cardRequestDto);
+		CardResponseDto card = cardService.updateCard(cardId, requestDto);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 수정에 성공하였습니다.", card));
@@ -82,5 +84,15 @@ public class CardController {
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다.", null));
+	}
+
+	@PutMapping("/cards/move")
+	public ResponseEntity<CommonDto<Void>> updateCardPosition(
+		@RequestBody UpdateCardPositionDto updateCardPositionDto) {
+
+		cardService.updateCardPosition(updateCardPositionDto);
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 이동에 성공하였습니다.", null));
 	}
 }
