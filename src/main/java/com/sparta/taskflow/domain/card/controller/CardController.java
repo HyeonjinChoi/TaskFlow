@@ -94,7 +94,7 @@ public class CardController {
 		cardService.deleteCard(cardId, userDetails.getUser());
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
-			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다."));
+			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다.", null));
 	}
 
 	@PutMapping("/move")

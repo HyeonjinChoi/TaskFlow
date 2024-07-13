@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class CommonDto<T> {
 
     private int statusCode;
@@ -13,13 +14,4 @@ public class CommonDto<T> {
     private T data;
 
 
-    public CommonDto (int statusCode, String message){
-        this.statusCode = statusCode;
-        this.message = message;
-    }
-    public CommonDto (int statusCode, String message, T data){
-        this.statusCode = statusCode;
-        this.message = message;
-        this.data = data;
-    }
 }

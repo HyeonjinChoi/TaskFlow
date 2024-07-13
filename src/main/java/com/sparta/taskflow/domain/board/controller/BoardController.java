@@ -75,9 +75,5 @@ public class BoardController {
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "회원 초대에 성공했습니다."
                 , null));
-
     }
-
-
-
 }
