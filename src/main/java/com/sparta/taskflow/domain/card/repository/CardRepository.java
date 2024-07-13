@@ -13,4 +13,5 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 	int countBySection(Section section);
 
 	Page<Card> findByBoard(Board board, Pageable pageable);
+	Page<Card> findByBoard_IdAndSection_SectionId(Board board,  Long sectionId ,Pageable pageable);
 }

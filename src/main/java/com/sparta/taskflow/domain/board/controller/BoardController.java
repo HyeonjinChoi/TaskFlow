@@ -2,7 +2,6 @@ package com.sparta.taskflow.domain.board.controller;
 
 import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.domain.board.dto.*;
-import com.sparta.taskflow.domain.board.service.BoardInvitationService;
 import com.sparta.taskflow.domain.board.service.BoardService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +20,6 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-    private final BoardInvitationService boardInvitationService;
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping

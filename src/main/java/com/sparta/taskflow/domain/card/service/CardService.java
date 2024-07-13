@@ -21,7 +21,6 @@ import com.sparta.taskflow.domain.card.dto.CardUpdateRequestDto;
 import com.sparta.taskflow.domain.card.dto.UpdateCardPositionDto;
 import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.card.repository.CardRepository;
-import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
 import com.sparta.taskflow.domain.section.entity.Section;
 import com.sparta.taskflow.domain.section.repository.SectionRepository;
 import com.sparta.taskflow.domain.user.entity.User;
@@ -37,8 +36,7 @@ public class CardService {
 	private final CardRepository cardRepository;
 
 	public CardResponseDto createCard(
-		CardRequestDto requestDto,
-		User user) {
+		CardRequestDto requestDto, User user) {
 
 		Board board = findBoard(requestDto.getBoardId());
 		Section section = findSection(requestDto.getSectionId());
@@ -62,15 +60,14 @@ public class CardService {
 		return new CardResponseDto(cardRepository.save(card));
 	}
 
-	@Transactional(readOnly = true)
-	public Page<CardResponseDto> getCards(
-		BoardIdRequestDto boardIdRequestDto,
-		int page) {
 
-		Board board = findBoard(boardIdRequestDto.getBoardId());
+	@Transactional(readOnly = true)
+	public Page<CardResponseDto> findCard(Long boardId, Long sectionId, int page) {
+
+		Board board = findBoard(boardId);
 		Pageable pageable = PageRequest.of(page, PageSize.CARD.getSize());
 
-		Page<Card> cards = cardRepository.findByBoard(board, pageable);
+		Page<Card> cards = cardRepository.findByBoard_IdAndSection_SectionId(board,sectionId,pageable);
 		List<CardResponseDto> cardDtos = cards.stream()
 			.map(CardResponseDto::new)
 			.toList();
@@ -80,19 +77,16 @@ public class CardService {
 
 	@Transactional(readOnly = true)
 	public CardResponseDto getCard(Long cardId) {
-		Card card = cardRepository.findById(cardId)
-			.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
-
+		Card card = findCard(cardId);
 		return new CardResponseDto(card);
 	}
 
+	@Transactional
 	public CardResponseDto updateCard(
-		Long cardId,
-		CardUpdateRequestDto requestDto) {
+		Long cardId, CardUpdateRequestDto requestDto,User user) {
 
-		Card card = cardRepository.findById(cardId)
-			.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
-
+		Card card = findCard(cardId);
+		exceptionCardUser(user, card);
 		card.update(requestDto.getTitle(), requestDto.getContents(), requestDto.getDueDate());
 
 		return new CardResponseDto(cardRepository.save(card));
@@ -103,13 +97,8 @@ public class CardService {
 		Long cardId,
 		User user) {
 
-		Card card = cardRepository.findById(cardId)
-			.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
-
-		if (!Objects.equals(card.getUser().getId(), user.getId())) {
-			throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION);
-		}
-
+		Card card = findCard(cardId);
+		exceptionCardUser(user, card);
 		cardRepository.delete(card);
 	}
 
@@ -117,8 +106,8 @@ public class CardService {
 	public void updateCardPosition(
 		UpdateCardPositionDto updateCardPositionDto) {
 
-		Card card = cardRepository.findById(updateCardPositionDto.getCardId())
-			.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
+		Card card = findCard(updateCardPositionDto.getCardId());
+
 		Section oldSection = card.getSection();
 		Section newSection = findSection(updateCardPositionDto.getSectionId());
 
@@ -160,6 +149,16 @@ public class CardService {
 		cardRepository.saveAll(newSectionCards);
 	}
 
+
+
+	//:::::::::::::::::// tool box //::::::::::::::::://
+
+	private static void exceptionCardUser(User user, Card card) {
+		if (!Objects.equals(card.getUser().getId(), user.getId())) {
+			throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION);
+		}
+	}
+
 	private Board findBoard(Long boardId) {
 		return boardRepository.findById(boardId).orElseThrow(() ->
 			new BusinessException(ErrorCode.BOARD_NOT_FOUND)
@@ -170,5 +169,11 @@ public class CardService {
 		return sectionRepository.findById(sectionId).orElseThrow(() ->
 			new BusinessException(ErrorCode.SECTION_NOT_FOUND)
 		);
+	}
+
+	private Card findCard(Long cardId) {
+		Card card = cardRepository.findById(cardId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.CARD_NOT_FOUND));
+		return card;
 	}
 }
