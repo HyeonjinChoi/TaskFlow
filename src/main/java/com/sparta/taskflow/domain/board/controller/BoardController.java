@@ -64,12 +64,5 @@ public class BoardController {
                 , null));
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
-    @PostMapping("/{boardId}/invitations")
-    public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto) {
-        boardInvitationService.inviteUser(boardId, reqDto);
-        return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "회원을 초대합니다."
-                , null));
-    }
+
 }
