@@ -5,7 +5,7 @@ Authorization: {{access_token}}
 
 
 {
-  "contents": "섹션 내용",
+  "contents": "섹션 내용 3",
   "userId": 1,
   "boardId": 1
 }
