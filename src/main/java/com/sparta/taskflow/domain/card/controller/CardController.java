@@ -1,5 +1,6 @@
 package com.sparta.taskflow.domain.card.controller;
 
+import com.sparta.taskflow.domain.board.service.BoardInvitationService;
 import com.sparta.taskflow.domain.board.service.BoardService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import org.springframework.data.domain.Page;
@@ -34,9 +35,10 @@ import lombok.RequiredArgsConstructor;
 public class CardController {
 
 	private final CardService cardService;
-	private final BoardService boardService;
+	private final BoardInvitationService boardInvitationService;
 
-	@PreAuthorize("@boardService.canCreateCard(#requestDto.boardId, authentication.principal.user.id)")
+
+	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByBoardId(#requestDto.boardId, #userDetails.user.id)")
 	@PostMapping
 	public ResponseEntity<CommonDto<CardResponseDto>> createCard(
 		@RequestBody CardRequestDto requestDto,
@@ -70,8 +72,10 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 단건 조회에 성공하였습니다.", card));
 	}
 
-	@PreAuthorize("@boardService.canCreateCard(#requestDto.boardId, authentication.principal.user.id)")
+
+
 	@PutMapping("/{cardId}")
+	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#cardId , #userDetails.user.id)")
 	public ResponseEntity<CommonDto<CardResponseDto>> updateCard(
 		@PathVariable Long cardId,
 		@RequestBody CardUpdateRequestDto requestDto) {
@@ -82,8 +86,10 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 수정에 성공하였습니다.", card));
 	}
 
-	@PreAuthorize("@boardService.canCreateCard(#requestDto.boardId, authentication.principal.user.id)")
+
+
 	@DeleteMapping("/{cardId}")
+	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#cardId , #userDetails.user.id)")
 	public ResponseEntity<CommonDto<Void>> deleteCard (
 		@PathVariable Long cardId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -94,8 +100,8 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다.", null));
 	}
 
-	@PreAuthorize("@boardService.canCreateCard(#requestDto.boardId, authentication.principal.user.id)")
 	@PutMapping("/move")
+	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#updateCardPositionDto.cardId, #userDetails.user.id)")
 	public ResponseEntity<CommonDto<Void>> updateCardPosition(
 		@RequestBody UpdateCardPositionDto updateCardPositionDto) {
 

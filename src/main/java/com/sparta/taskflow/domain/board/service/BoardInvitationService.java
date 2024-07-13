@@ -9,6 +9,7 @@ import com.sparta.taskflow.domain.board.repository.BoardInvitationRepository;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
 import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.card.repository.CardRepository;
+import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,20 @@ public class BoardInvitationService {
 
         Board board = boardService.findBoard(boardId);
 
-        if (boardInvitationRepository.existsByBoardIdAndUserId(boardId, reqDto.getUserId())){
+        User user = userRepository.findByUsername(reqDto.getUsername()).orElseThrow(
+                () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        if (boardInvitationRepository.existsByBoardIdAndUserId(boardId, user.getId())){
             throw new BusinessException(ErrorCode.BOARD_INVITE_ALREADY_MEMBER);
         }
-        userRepository.findById(reqDto.getUserId())
-                .ifPresent(user -> boardInvitationRepository.save(new BoardInvitation(user, board)));
+
+        BoardInvitation boardInvitation = BoardInvitation.builder()
+                .board(board)
+                .user(user)
+                .build();
+        boardInvitationRepository.save(boardInvitation);
+
     }
 
     public boolean cardAllowedByCard(Long cardId, Long userId) {
@@ -43,6 +53,9 @@ public class BoardInvitationService {
     }
 
     public boolean cardAllowedByBoard(Long boardId, Long userId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new BusinessException(ErrorCode.BOARD_NOT_FOUND)
+        );
         return isInvitation(boardId, userId) || isManager(userId,boardId);
     }
 
