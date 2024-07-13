@@ -3,10 +3,12 @@ package com.sparta.taskflow.domain.board.controller;
 import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.domain.board.dto.*;
 import com.sparta.taskflow.domain.board.service.BoardService;
+import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +22,8 @@ public class BoardController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping
-    public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto) {
-        BoardResDto responseDto = boardService.createBoard(reqDto);
+    public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto, UserDetailsImpl userDetails) {
+        BoardResDto responseDto = boardService.createBoard(reqDto, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "보드가 생성됩니다!"
                 , responseDto));
