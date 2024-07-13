@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -32,10 +31,10 @@ public class BoardService {
         }
 
         Board board = Board.builder()
-            .name(reqDto.getName())
-            .description(reqDto.getDescription())
-            .user(user)
-            .build();
+                .name(reqDto.getName())
+                .description(reqDto.getDescription())
+                .user(user)
+                .build();
         Board savedBoard = boardRepository.save(board);
         return new BoardResDto(savedBoard);
     }
@@ -77,23 +76,11 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
-    public void inviteUser(Long boardId, BoardInviteReqDto reqDto) {
 
-        Board board = findBoard(boardId);
-
-        if (boardInvitationRepository.existsByBoardIdAndUserId(boardId, reqDto.getUserId())){
-            throw new BusinessException(ErrorCode.BOARD_INVITE_ALREADY_MEMBER);
-        }
-        userRepository.findById(reqDto.getUserId())
-                .ifPresent(user -> boardInvitationRepository.save(new BoardInvitation(user, board)));
-    }
-
-    public Board findBoard(Long id){
+    public Board findBoard(Long id) {
         return boardRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
     }
-
-    public boolean canCreateCard(Long boardId, Long userId) {
-        return boardInvitationRepository.existsByBoardIdAndUserId(boardId, userId);
-    }
 }
+
+

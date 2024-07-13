@@ -2,6 +2,8 @@ package com.sparta.taskflow.domain.board.controller;
 
 import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.domain.board.dto.*;
+import com.sparta.taskflow.domain.board.repository.BoardInvitationRepository;
+import com.sparta.taskflow.domain.board.service.BoardInvitationService;
 import com.sparta.taskflow.domain.board.service.BoardService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final BoardInvitationRepository boardInvitationRepository;
+    private final BoardInvitationService boardInvitationService;
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping
@@ -57,7 +61,7 @@ public class BoardController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
+    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         boardService.deleteBoard(boardId);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "보드가 삭제됩니다!"
@@ -65,11 +69,11 @@ public class BoardController {
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    @PostMapping("/{boardId}/invitations")
-    public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestParam BoardInviteReqDto reqDto) {
-        boardService.inviteUser(boardId, reqDto);
+    @PostMapping("{boardId}/invitations")
+    public ResponseEntity<?> inviteMember(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boardInvitationService.inviteUser(boardId, reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "회원을 초대합니다."
+                , "회원 초대에 성공했습니다."
                 , null));
     }
 }

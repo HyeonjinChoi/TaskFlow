@@ -11,6 +11,7 @@ public class CommonDto<T> {
 
     private int statusCode;
     private String message;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
+
+
 }

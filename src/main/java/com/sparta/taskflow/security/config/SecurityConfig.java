@@ -1,10 +1,12 @@
 package com.sparta.taskflow.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.taskflow.domain.board.service.BoardInvitationService;
 import com.sparta.taskflow.security.exception.AccessDeniedHandlerImpl;
 import com.sparta.taskflow.security.exception.AuthenticationEntryPointImpl;
 import com.sparta.taskflow.security.filter.AuthenticationFilter;
 import com.sparta.taskflow.security.filter.TransactionFilter;
+import com.sparta.taskflow.security.service.CustomSecurityExpressionRoot;
 import com.sparta.taskflow.security.service.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,15 +32,17 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -72,5 +78,11 @@ public class SecurityConfig {
         http.addFilterAt(authenticationFilter(jwtUtil), TransactionFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CustomSecurityExpressionRoot customSecurityExpressionRoot(BoardInvitationService boardInvitationService) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return new CustomSecurityExpressionRoot(authentication, boardInvitationService);
     }
 }
