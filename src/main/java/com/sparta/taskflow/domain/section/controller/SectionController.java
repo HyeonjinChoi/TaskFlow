@@ -33,10 +33,10 @@ public class SectionController {
 
 	@GetMapping
 	public ResponseEntity<CommonDto<Page<SectionResponseDto>>> getSections (
-		@RequestBody BoardIdRequestDto boardIdRequestDto,
+		@RequestParam Long boardId,
 		@RequestParam int page) {
 
-		Page<SectionResponseDto> sections = sectionService.getSections(boardIdRequestDto, page);
+		Page<SectionResponseDto> sections = sectionService.getSections(boardId, page);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "섹션 조회에 성공하였습니다.", sections));

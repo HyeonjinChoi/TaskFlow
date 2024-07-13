@@ -11,7 +11,7 @@ Authorization: {{access_token}}
 }
 
 ### 섹션 조회
-GET localhost:8080/api/sections/0
+GET localhost:8080/api/sections?page=0
 Content-Type: application/json
 Authorization: {{access_token}}
 

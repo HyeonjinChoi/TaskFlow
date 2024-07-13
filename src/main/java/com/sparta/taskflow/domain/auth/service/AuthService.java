@@ -76,7 +76,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String login(LoginRequestDto requestDto , HttpServletResponse httpResponse) {
+    public TokenResponseDto login(LoginRequestDto requestDto , HttpServletResponse httpResponse) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -95,7 +95,7 @@ public class AuthService {
             user.addRefreshToken(refreshToken);
             httpResponse.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
 
-            return "로그인이 완료되었습니다.";
+            return new TokenResponseDto(accessToken);
         } catch (LockedException e) {
             throw new BusinessException(ErrorCode.USER_BLOCKED);
         }  catch (AuthenticationException e) {

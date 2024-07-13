@@ -34,8 +34,8 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDto requestDto , HttpServletResponse httpResponse) {
-        return ResponseEntity.ok().body(authService.login(requestDto,httpResponse));
+    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto requestDto , HttpServletResponse httpResponse) {
+        return ResponseEntity.ok(authService.login(requestDto,httpResponse));
     }
 
     // 로그아웃
