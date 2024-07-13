@@ -56,10 +56,9 @@ public class SectionService {
 
 	@Transactional(readOnly = true)
 	public Page<SectionResponseDto> getSections(
-		BoardIdRequestDto boardIdRequestDto,
-		int page) {
+			Long boardId, int page) {
 
-		Board board = findBoard(boardIdRequestDto.getBoardId());
+		Board board = findBoard(boardId);
 		Pageable pageable = PageRequest.of(page, 4);
 
 		Page<Section> sections = sectionRepository.findByBoard(board, pageable);
