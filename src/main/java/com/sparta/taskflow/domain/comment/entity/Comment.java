@@ -5,6 +5,7 @@ import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.comment.dto.CommentRequestDto;
 import com.sparta.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.scheduling.config.Task;
@@ -31,8 +32,9 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "card_id")
     private Card card;
 
-    public Comment(CommentRequestDto requestDto, User user, Card card) {
-        this.contents = requestDto.getContents();
+    @Builder
+    public Comment(String contents, User user, Card card) {
+        this.contents = contents;
         this.user = user;
         this.card = card;
     }
