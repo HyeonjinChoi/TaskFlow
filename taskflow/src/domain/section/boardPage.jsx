@@ -54,7 +54,9 @@ function BoardPage({ onLogout }) {
         <div>
             <header>
                 <h1>Board Page</h1>
-                <button onClick={handleLogout}>Logout</button>
+                <Link to="/">
+                    <button onClick={handleLogout}>Logout</button>
+                </Link>
                 <Link to="/board">
                     <button onClick={handleDeleteBoardKey}>go Board</button>
                 </Link>
@@ -73,7 +75,7 @@ function BoardPage({ onLogout }) {
                                 <p>Created At: {section.createdAt}</p>
                                 <p>Modified At: {section.modifiedAt}</p>
 
-                                <FetchCards sectionId={section.id} boardId={boardId} key={section.id} />
+                                <FetchCards sectionId={section.sectionId} boardId={boardId} key={section.id} />
                             </div>
                         ))}
                     </div>
@@ -138,17 +140,21 @@ const FetchCards = ({ sectionId, boardId }) => {
 
 const styles = {
     box: {
+        verticalAlign:'top',
+        position: 'relative',
+        display:'inline-block',
         border: '1px solid #ccc',
         padding: '10px',
-        margin: '10px 0',
+        margin: '10px 15px',
         borderRadius: '5px',
     },
     cardBox: {
+        color:'white',
         border: '1px solid #ccc',
         padding: '10px',
         margin: '10px 0',
         borderRadius: '5px',
-        backgroundColor: '#f9f9f9',
+        backgroundColor: 'black',
     },
 };
 
