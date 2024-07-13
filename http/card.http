@@ -7,8 +7,9 @@ Authorization: {{access_token}}
 {
   "title": "카드 타이틀",
   "contents": "카드 내용",
+  "dueDate": "2024-07-23T15:00:00",
   "userId": 1,
-  "boardId": 2,
+  "boardId": 1,
   "sectionId": 1
 }
 

@@ -23,8 +23,6 @@ import com.sparta.taskflow.domain.card.dto.CardResponseDto;
 import com.sparta.taskflow.domain.card.dto.CardUpdateRequestDto;
 import com.sparta.taskflow.domain.card.dto.UpdateCardPositionDto;
 import com.sparta.taskflow.domain.card.service.CardService;
-import com.sparta.taskflow.domain.section.dto.BoardIdRequestDto;
-import com.sparta.taskflow.domain.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,10 +48,11 @@ public class CardController {
 
 	@GetMapping
 	public ResponseEntity<CommonDto<Page<CardResponseDto>>> getCards(
-		@RequestBody BoardIdRequestDto boardIdRequestDto,
+		@RequestParam Long boardId,
+		@RequestParam Long sectionId,
 		@RequestParam int page) {
 
-		Page<CardResponseDto> cards = cardService.getCards(boardIdRequestDto, page);
+		Page<CardResponseDto> cards = cardService.findCard(boardId, sectionId, page);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 전체 조회에 성공하였습니다.", cards));
@@ -74,9 +73,10 @@ public class CardController {
 	@PutMapping("/{cardId}")
 	public ResponseEntity<CommonDto<CardResponseDto>> updateCard(
 		@PathVariable Long cardId,
-		@RequestBody CardUpdateRequestDto requestDto) {
+		@RequestBody CardUpdateRequestDto requestDto,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		CardResponseDto card = cardService.updateCard(cardId, requestDto);
+		CardResponseDto card = cardService.updateCard(cardId, requestDto,userDetails.getUser());
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 수정에 성공하였습니다.", card));
