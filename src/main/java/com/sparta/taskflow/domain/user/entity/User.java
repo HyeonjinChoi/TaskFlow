@@ -1,6 +1,10 @@
 package com.sparta.taskflow.domain.user.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sparta.taskflow.common.util.Timestamped;
+import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.user.dto.ProfileUpdateReqDto;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -38,6 +42,9 @@ public class User extends Timestamped {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Board> boards = new ArrayList<>();
 
     private String refreshToken;
 

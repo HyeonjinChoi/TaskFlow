@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -28,7 +29,11 @@ public class BoardService {
             throw new BusinessException(ErrorCode.FAIL_AUTHENTICATION);
         }
 
-        Board board = new Board(reqDto, user);
+        Board board = Board.builder()
+            .name(reqDto.getName())
+            .description(reqDto.getDescription())
+            .user(user)
+            .build();
         Board savedBoard = boardRepository.save(board);
         return new BoardResDto(savedBoard);
     }

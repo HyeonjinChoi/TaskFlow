@@ -38,7 +38,11 @@ public class CommentService {
 
     public CommentResponseDto createComment(CommentRequestDto requestDto, User user) {
         Card card = getCard(requestDto.getCardId());
-        Comment comment = new Comment(requestDto, user, card);
+        Comment comment = Comment.builder()
+            .contents(requestDto.getContents())
+            .card(card)
+            .user(user)
+            .build();
         commentRepository.save(comment);
         return new CommentResponseDto(comment);
     }
