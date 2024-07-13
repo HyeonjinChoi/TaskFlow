@@ -65,9 +65,10 @@ public class CardService {
 	public Page<CardResponseDto> findCard(Long boardId, Long sectionId, int page) {
 
 		Board board = findBoard(boardId);
+		Section section = findSection(sectionId);
 		Pageable pageable = PageRequest.of(page, PageSize.CARD.getSize());
 
-		Page<Card> cards = cardRepository.findByBoard_IdAndSection_SectionId(board,sectionId,pageable);
+		Page<Card> cards = cardRepository.findByBoardAndSection(board,section,pageable);
 		List<CardResponseDto> cardDtos = cards.stream()
 			.map(CardResponseDto::new)
 			.toList();

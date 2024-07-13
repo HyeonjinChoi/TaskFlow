@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class SectionResponseDto {
 
-	private final Long id;
+	private final Long sectionId;
 	private final String contents;
 	private final String nickname;
 	private final int position;
@@ -17,7 +17,7 @@ public class SectionResponseDto {
 	private final LocalDateTime modifiedAt;
 
 	public SectionResponseDto(Section section) {
-		this.id = section.getSectionId();
+		this.sectionId = section.getSectionId();
 		this.contents = section.getContents();
 		this.nickname = section.getUser().getNickname();
 		this.position = section.getPosition();
