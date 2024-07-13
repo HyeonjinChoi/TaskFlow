@@ -22,15 +22,15 @@ public class Board extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -49,4 +49,5 @@ public class Board extends Timestamped {
         this.name = boardUpdateReqDto.getName();
         this.description = boardUpdateReqDto.getDescription();
     }
+
 }

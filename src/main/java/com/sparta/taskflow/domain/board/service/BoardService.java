@@ -23,8 +23,10 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardInvitationRepository boardInvitationRepository;
     private final UserRepository userRepository;
+
     @Transactional
     public BoardResDto createBoard(BoardReqDto reqDto, User user) {
+
         if (reqDto.getName() == null || reqDto.getDescription() == null) {
             throw new BusinessException(ErrorCode.FAIL_AUTHENTICATION);
         }

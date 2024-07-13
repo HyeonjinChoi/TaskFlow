@@ -105,7 +105,9 @@ public class AuthService {
 
     @Transactional
     public String logout(User user) {
-        user.deleteRefreshToken();
+        User logout = userRepository.findById(user.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        logout.deleteRefreshToken();
         return "로그아웃이 완료되었습니다.";
     }
 }
