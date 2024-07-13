@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class BoardController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping
-    public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto, UserDetailsImpl userDetails) {
+    public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResDto responseDto = boardService.createBoard(reqDto, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "보드가 생성됩니다!"
@@ -65,7 +66,7 @@ public class BoardController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping("/{boardId}/invitations")
-    public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto) {
+    public ResponseEntity<?> inviteUser(@PathVariable Long boardId, @RequestParam BoardInviteReqDto reqDto) {
         boardService.inviteUser(boardId, reqDto);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "회원을 초대합니다."
