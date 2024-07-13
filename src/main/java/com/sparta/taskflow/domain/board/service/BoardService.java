@@ -7,6 +7,7 @@ import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.entity.BoardInvitation;
 import com.sparta.taskflow.domain.board.repository.BoardInvitationRepository;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
+import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,12 @@ public class BoardService {
     private final BoardInvitationRepository boardInvitationRepository;
     private final UserRepository userRepository;
     @Transactional
-    public BoardResDto createBoard(BoardReqDto reqDto) {
+    public BoardResDto createBoard(BoardReqDto reqDto, User user) {
         if (reqDto.getName() == null || reqDto.getDescription() == null) {
             throw new BusinessException(ErrorCode.FAIL_AUTHENTICATION);
         }
 
-        Board board = new Board(reqDto);
+        Board board = new Board(reqDto, user);
         Board savedBoard = boardRepository.save(board);
         return new BoardResDto(savedBoard);
     }
