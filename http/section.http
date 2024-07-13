@@ -7,7 +7,7 @@ Authorization: {{access_token}}
 {
   "contents": "섹션 내용",
   "userId": 1,
-  "boardId": 2
+  "boardId": 1
 }
 
 ### 섹션 조회
