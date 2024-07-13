@@ -5,6 +5,7 @@ import com.sparta.taskflow.domain.board.dto.BoardReqDto;
 import com.sparta.taskflow.domain.section.entity.Section;
 import com.sparta.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,15 +23,15 @@ public class Board extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -38,9 +39,10 @@ public class Board extends Timestamped {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardInvitation> invitations = new ArrayList<>();
 
-    public Board(BoardReqDto boardReqDto,User user) {
-        this.name = boardReqDto.getName();
-        this.description = boardReqDto.getDescription();
+    @Builder
+    public Board(String name, String description, User user) {
+        this.name = name;
+        this.description = description;
         this.user = user;
     }
 

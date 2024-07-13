@@ -1,9 +1,7 @@
 package com.sparta.taskflow.domain.board.controller;
 
 import com.sparta.taskflow.common.dto.CommonDto;
-import com.sparta.taskflow.domain.board.dto.BoardInviteReqDto;
-import com.sparta.taskflow.domain.board.dto.BoardReqDto;
-import com.sparta.taskflow.domain.board.dto.BoardResDto;
+import com.sparta.taskflow.domain.board.dto.*;
 import com.sparta.taskflow.domain.board.service.BoardInvitationService;
 import com.sparta.taskflow.domain.board.service.BoardService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
@@ -26,7 +24,7 @@ public class BoardController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping
-    public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResDto responseDto = boardService.createBoard(reqDto, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "보드가 생성됩니다!"
