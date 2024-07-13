@@ -72,7 +72,6 @@ public class CardController {
 	}
 
 
-
 	@PutMapping("/{cardId}")
 	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#cardId , #userDetails.user.id)")
 	public ResponseEntity<CommonDto<CardResponseDto>> updateCard(
@@ -86,8 +85,6 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 수정에 성공하였습니다.", card));
 	}
 
-
-
 	@DeleteMapping("/{cardId}")
 	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#cardId , #userDetails.user.id)")
 	public ResponseEntity<CommonDto<Void>> deleteCard (
@@ -97,13 +94,13 @@ public class CardController {
 		cardService.deleteCard(cardId, userDetails.getUser());
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
-			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다.", null));
+			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다."));
 	}
 
 	@PutMapping("/move")
 	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#updateCardPositionDto.cardId, #userDetails.user.id)")
 	public ResponseEntity<CommonDto<Void>> updateCardPosition(
-		@RequestBody UpdateCardPositionDto updateCardPositionDto) {
+		@RequestBody UpdateCardPositionDto updateCardPositionDto, UserDetailsImpl userDetails) {
 
 		cardService.updateCardPosition(updateCardPositionDto);
 		return ResponseEntity
