@@ -40,11 +40,18 @@ function Board({ onLogout }) {
         console.log(`Stored board id: ${id}`);
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('board');
+        onLogout();
+    };
+
     return (
         <div>
             <header>
                 <h1>보더 페이지</h1>
-                <button onClick={onLogout}>Logout</button>
+                <Link to="/">
+                    <button onClick={handleLogout}>Logout</button>
+                </Link>
             </header>
             <main>
                 {loading ? (
