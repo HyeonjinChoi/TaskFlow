@@ -21,8 +21,8 @@ Authorization: {{access_token}}
 
 
 {
-  "name": "보드 수정 태스트",
-  "description": "보드 설명 수정 태스트"
+  "name": "보드 수정 태스트2",
+  "description": "보드 설명 수정 태스트2"
 }
 
 
