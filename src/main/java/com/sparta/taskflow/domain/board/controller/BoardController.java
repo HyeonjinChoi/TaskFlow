@@ -52,8 +52,8 @@ public class BoardController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PutMapping("/{boardId}")
-    public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardReqDto reqDto) {
-        BoardResDto responseDto = boardService.updateBoard(boardId, reqDto);
+    public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardReqDto reqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        BoardResDto responseDto = boardService.updateBoard(boardId, reqDto, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "보드가 수정됩니다!"
                 , responseDto));
@@ -62,7 +62,7 @@ public class BoardController {
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @DeleteMapping("/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId,@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        boardService.deleteBoard(boardId);
+        boardService.deleteBoard(boardId, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "보드가 삭제됩니다!"
                 , null));
