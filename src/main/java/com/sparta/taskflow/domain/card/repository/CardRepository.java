@@ -1,5 +1,6 @@
 package com.sparta.taskflow.domain.card.repository;
 
+import com.sparta.taskflow.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
 	Page<Card> findByBoard(Board board, Pageable pageable);
 	Page<Card> findByBoardAndSection(Board board,  Section section ,Pageable pageable);
+
+    Page<Card> findByBoardAndSectionAndUser(Board board, Section section, Pageable pageable, User user);
 }

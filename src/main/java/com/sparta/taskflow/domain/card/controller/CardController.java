@@ -52,9 +52,10 @@ public class CardController {
 	public ResponseEntity<CommonDto<Page<CardResponseDto>>> getCards(
 		@RequestParam Long boardId,
 		@RequestParam Long sectionId,
-		@RequestParam int page) {
+		@RequestParam int page,
+		@RequestParam(required = false) String username) {
 
-		Page<CardResponseDto> cards = cardService.findCard(boardId, sectionId, page);
+		Page<CardResponseDto> cards = cardService.findCard(boardId, sectionId, page, username);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 전체 조회에 성공하였습니다.", cards));
