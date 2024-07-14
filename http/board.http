@@ -9,7 +9,7 @@ Authorization: {{access_token}}
 }
 
 ### 보드 전체 조회
-GET localhost:8080/api/boards
+GET localhost:8080/api/boards?page=0
 Content-Type: application/json
 Authorization: {{access_token}}
 
