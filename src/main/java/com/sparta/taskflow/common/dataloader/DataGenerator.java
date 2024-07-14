@@ -3,7 +3,6 @@ package com.sparta.taskflow.common.dataloader;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.github.javafaker.Faker;
@@ -58,13 +57,13 @@ public class DataGenerator {
 	}
 
 	public static String generateBoardDescription() {
-		return faker.lorem().sentence();
+		return generateContents();
 	}
 
 	// Section data
 	public static List<String> generateUniqueSectionContents(int count) {
 		return IntStream.range(0, count * 2)
-			.mapToObj(i -> faker.lorem().characters(200))
+			.mapToObj(i -> generateContents())
 			.distinct()
 			.limit(count)
 			.toList();
@@ -73,14 +72,14 @@ public class DataGenerator {
 	// Card data
 	public static List<String> generateUniqueCardTitles(int count) {
 		return IntStream.range(0, count * 2)
-			.mapToObj(i -> faker.lorem().characters(50))
+			.mapToObj(i -> generateContents())
 			.distinct()
 			.limit(count)
 			.toList();
 	}
 
 	public static String generateCardContents() {
-		return faker.lorem().characters(255);
+		return generateContents();
 	}
 
 	public static LocalDateTime generateDueDate() {
@@ -89,6 +88,18 @@ public class DataGenerator {
 
 	// Comment data
 	public static String generateCommentContents() {
-		return faker.lorem().characters(255);
+		return generateContents();
+	}
+
+	private static String generateContents() {
+		StringBuilder content = new StringBuilder();
+		while (content.length() < 255) {
+			String sentence = faker.lorem().sentence();
+			if (content.length() + sentence.length() > 255) {
+				break;
+			}
+			content.append(sentence).append(" ");
+		}
+		return content.toString().trim();
 	}
 }

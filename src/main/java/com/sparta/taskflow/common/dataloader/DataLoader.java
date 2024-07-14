@@ -2,12 +2,15 @@ package com.sparta.taskflow.common.dataloader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.sparta.taskflow.domain.board.entity.Board;
+import com.sparta.taskflow.domain.board.entity.BoardInvitation;
+import com.sparta.taskflow.domain.board.repository.BoardInvitationRepository;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
 import com.sparta.taskflow.domain.card.entity.Card;
 import com.sparta.taskflow.domain.card.repository.CardRepository;
@@ -26,6 +29,7 @@ public class DataLoader implements CommandLineRunner {
 
 	private final UserRepository userRepository;
 	private final BoardRepository boardRepository;
+	private final BoardInvitationRepository boardInvitationRepository;
 	private final SectionRepository sectionRepository;
 	private final CardRepository cardRepository;
 	private final CommentRepository commentRepository;
@@ -49,14 +53,16 @@ public class DataLoader implements CommandLineRunner {
 
 	private List<User> createUsers(int count, List<String> usernames, List<String> emails, List<String> nicknames) {
 		List<User> users = new ArrayList<>();
+		Random random = new Random();
 		for (int i = 0; i < count; i++) {
+			User.Role role = random.nextBoolean() ? User.Role.USER : User.Role.MANAGER;
 			User user = User.builder()
 				.username(usernames.get(i))
 				.password(passwordEncoder.encode(DataGenerator.generatePassword()))
 				.email(emails.get(i))
 				.nickname(nicknames.get(i))
 				.introduction(DataGenerator.generateIntroduction())
-				.role(User.Role.USER)
+				.role(role)
 				.status(User.Status.NORMAL)
 				.build();
 			users.add(userRepository.save(user));
@@ -67,12 +73,24 @@ public class DataLoader implements CommandLineRunner {
 	private List<Board> createBoards(List<User> users) {
 		List<Board> boards = new ArrayList<>();
 		for (User user : users) {
-			Board board = Board.builder()
-				.name(DataGenerator.generateBoardName())
-				.description(DataGenerator.generateBoardDescription())
-				.user(user)
-				.build();
-			boards.add(boardRepository.save(board));
+			if (user.getRole() == User.Role.MANAGER) {
+				Board board = Board.builder()
+					.name(DataGenerator.generateBoardName())
+					.description(DataGenerator.generateBoardDescription())
+					.user(user)
+					.build();
+				boards.add(boardRepository.save(board));
+
+				for (User invitee : users) {
+					if (invitee.getRole() == User.Role.USER) {
+						BoardInvitation invitation = BoardInvitation.builder()
+							.user(invitee)
+							.board(board)
+							.build();
+						boardInvitationRepository.save(invitation);
+					}
+				}
+			}
 		}
 		return boards;
 	}
@@ -99,13 +117,16 @@ public class DataLoader implements CommandLineRunner {
 		List<Card> cards = new ArrayList<>();
 		int titlePosition = 0;
 		for (Section section : sections) {
+			List<BoardInvitation> invitations = boardInvitationRepository.findByBoard(section.getBoard());
+			List<User> invitedUsers = invitations.stream().map(BoardInvitation::getUser).toList();
 			for (int i = 0; i < 10; i++) {
+				User cardUser = invitedUsers.get(new Random().nextInt(invitedUsers.size()));
 				Card card = Card.builder()
 					.title(cardTitles.get(titlePosition))
 					.contents(DataGenerator.generateCardContents())
 					.dueDate(DataGenerator.generateDueDate())
 					.position(i)
-					.user(section.getUser())
+					.user(cardUser)
 					.board(section.getBoard())
 					.section(section)
 					.build();
