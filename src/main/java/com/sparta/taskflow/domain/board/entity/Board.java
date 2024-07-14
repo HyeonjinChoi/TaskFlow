@@ -15,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "board")
 public class Board extends Timestamped {
@@ -49,5 +50,4 @@ public class Board extends Timestamped {
         this.name = boardUpdateReqDto.getName();
         this.description = boardUpdateReqDto.getDescription();
     }
-
 }

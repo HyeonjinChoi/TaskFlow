@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 public class CardResponseDto {
 
+	private final Long cardId;
 	private final String title;
 	private final String contents;
 	private final String nickname;
@@ -23,5 +24,6 @@ public class CardResponseDto {
 		this.position = card.getPosition();
 		this.createdAt = card.getCreatedAt();
 		this.modifiedAt = card.getModifiedAt();
+		this.cardId = card.getCardId();
 	}
 }

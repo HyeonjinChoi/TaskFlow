@@ -9,12 +9,15 @@ import com.sparta.taskflow.domain.board.repository.BoardInvitationRepository;
 import com.sparta.taskflow.domain.board.repository.BoardRepository;
 import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
+import com.sparta.taskflow.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +35,10 @@ public class BoardService {
         }
 
         Board board = Board.builder()
-            .name(reqDto.getName())
-            .description(reqDto.getDescription())
-            .user(user)
-            .build();
+                .name(reqDto.getName())
+                .description(reqDto.getDescription())
+                .user(user)
+                .build();
         Board savedBoard = boardRepository.save(board);
         return new BoardResDto(savedBoard);
     }
@@ -57,43 +60,37 @@ public class BoardService {
 
     // 보드 수정
     @Transactional
-    public BoardResDto updateBoard(Long boardId, BoardReqDto reqDto) {
+    public BoardResDto updateBoard(Long boardId, BoardReqDto reqDto, User user) {
+        if(!isBoardByUser(boardId, user.getId())) {
+            throw new BusinessException(ErrorCode.BOARD_NO_PERMISSION);
+        }
+
         if (reqDto.getName() == null || reqDto.getDescription() == null) {
             throw new BusinessException(ErrorCode.BOARD_CREATE_MISSING_DATA);
         }
-        findBoard(boardId);
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
+        Board board = findBoard(boardId);
         board.update(reqDto);
         return new BoardResDto(board);
     }
 
     // 보드 삭제
     @Transactional
-    public void deleteBoard(Long boardId) {
-        findBoard(boardId);
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
+    public void deleteBoard(Long boardId, User user) {
+        if(!isBoardByUser(boardId, user.getId())) {
+            throw new BusinessException(ErrorCode.BOARD_NO_PERMISSION);
+        }
+        Board board = findBoard(boardId);
         boardRepository.delete(board);
     }
 
-    public void inviteUser(Long boardId, BoardInviteReqDto reqDto) {
-
-        Board board = findBoard(boardId);
-
-        if (boardInvitationRepository.existsByBoardIdAndUserId(boardId, reqDto.getUserId())){
-            throw new BusinessException(ErrorCode.BOARD_INVITE_ALREADY_MEMBER);
-        }
-        userRepository.findById(reqDto.getUserId())
-                .ifPresent(user -> boardInvitationRepository.save(new BoardInvitation(user, board)));
+    public Boolean isBoardByUser(Long boardId, Long userId) {
+        return boardRepository.existsByIdAndUserId(boardId, userId);
     }
 
-    public Board findBoard(Long id){
+    public Board findBoard(Long id) {
         return boardRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
     }
-
-    public boolean canCreateCard(Long boardId, Long userId) {
-        return boardInvitationRepository.existsByBoardIdAndUserId(boardId, userId);
-    }
 }
+
+

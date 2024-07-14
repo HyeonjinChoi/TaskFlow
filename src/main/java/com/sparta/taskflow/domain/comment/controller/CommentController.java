@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -24,14 +24,14 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/comments")
+    @PostMapping("")
     public ResponseEntity<?> createComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis ) {
         CommentResponseDto responseDto = commentService.createComment(requestDto, userDetailis.getUser());
         CommonDto<CommentResponseDto> response = new CommonDto<>(HttpStatus.OK.value(), "댓글 생성에 성공하셨습니다", responseDto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PutMapping("/comments/{commentId}")
+    @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis, @PathVariable("commentId") Long commentId) {
         CommentResponseDto responseDto = commentService.updateComment(requestDto, userDetailis.getUser(), commentId);
         CommonDto<CommentResponseDto> response = new CommonDto<>(HttpStatus.OK.value(), "댓글 수정에 성공하셨습니다", responseDto);
@@ -39,19 +39,21 @@ public class CommentController {
 
     }
 
-    @DeleteMapping("comments/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@RequestBody CommentDeleteReqestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis,  @PathVariable("commentId") Long commentId) {
         commentService.deleteComment(requestDto, userDetailis.getUser(), commentId);
         return ResponseEntity.status(HttpStatus.OK).body("답글 삭제에 성공하셨습니다.");
     }
 
-    @GetMapping("comments/{commentId}")
+    @GetMapping("/{commentId}")
     public ResponseEntity<?> getComment(@RequestBody CommentDeleteReqestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis,  @RequestParam(defaultValue = "1") int page) {
         List<CommentResponseDto> responseDto = commentService.getComments(requestDto, page, PageSize.COMMENT.getSize());
         CommonDto<List<CommentResponseDto>> response = new CommonDto<>(HttpStatus.OK.value(), "댓글 수정에 성공하셨습니다", responseDto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
+
+
 
 }
 

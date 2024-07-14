@@ -13,6 +13,7 @@ public enum ErrorCode {
 
 	// 권한
 	UNAUTHORIZED_ACTION(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+	UNAUTHORIZED_ACTION_CARD(HttpStatus.FORBIDDEN, "카드 생성/수정/삭제에 대한 권한이 없습니다."),
 
 	// 사용자
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
@@ -27,6 +28,7 @@ public enum ErrorCode {
 	BOARD_ALREADY_DELETED(HttpStatus.NOT_FOUND, "이미 삭제된 보드입니다."),
 	BOARD_INVITE_ALREADY_MEMBER(HttpStatus.CONFLICT, "이미 해당 보드에 초대된 사용자입니다."),
 	BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "보드를 찾을 수 없습니다."),
+	BOARD_NO_PERMISSION(HttpStatus.BAD_REQUEST, "해당 보드에 접근할 권한이 없습니다."),
 
 	// 섹션
 	SECTION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 섹션 이름입니다."),
