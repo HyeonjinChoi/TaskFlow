@@ -2,6 +2,7 @@ package com.sparta.taskflow.domain.board.service;
 
 import com.sparta.taskflow.common.exception.BusinessException;
 import com.sparta.taskflow.common.exception.ErrorCode;
+import com.sparta.taskflow.common.size.PageSize;
 import com.sparta.taskflow.domain.board.dto.*;
 import com.sparta.taskflow.domain.board.entity.Board;
 import com.sparta.taskflow.domain.board.entity.BoardInvitation;
@@ -12,6 +13,11 @@ import com.sparta.taskflow.domain.user.repository.UserRepository;
 import com.sparta.taskflow.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -45,8 +51,14 @@ public class BoardService {
 
     // 모든 보드 조회
     @Transactional
-    public List<BoardResDto> getBoards() {
-        return boardRepository.findAllByOrderByCreatedAtDesc().stream().map(BoardResDto::new).toList();
+    public Page<BoardResDto> getBoards(int page) {
+        Pageable pageable = PageRequest.of(page, PageSize.BOARD.getSize());
+
+        Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
+        List<BoardResDto> boardResDtos = boards.stream()
+            .map(BoardResDto::new)
+            .toList();
+        return new PageImpl<>(boardResDtos, pageable, boards.getTotalElements());
     }
 
     // 보드 단건 조회
