@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.sparta.taskflow.domain.board.entity.Board;
@@ -28,25 +29,33 @@ public class DataLoader implements CommandLineRunner {
 	private final SectionRepository sectionRepository;
 	private final CardRepository cardRepository;
 	private final CommentRepository commentRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public void run(String... args) throws Exception {
-		List<User> users = createUsers(20);
+		int userCount = 400;
+		List<String> usernames = DataGenerator.generateUniqueUsernames(userCount);
+		List<String> emails = DataGenerator.generateUniqueEmails(userCount);
+		List<String> nicknames = DataGenerator.generateUniqueNicknames(userCount);
+		List<String> sectionContents = DataGenerator.generateUniqueSectionContents(userCount * 3);
+		List<String> cardTitles = DataGenerator.generateUniqueCardTitles(userCount * 3 * 10);
+
+		List<User> users = createUsers(userCount, usernames, emails, nicknames);
 		List<Board> boards = createBoards(users);
-		List<Section> sections = createSections(boards);
-		List<Card> cards = createCards(sections);
+		List<Section> sections = createSections(boards, sectionContents);
+		List<Card> cards = createCards(sections, cardTitles);
 		createComments(cards);
 	}
 
-	private List<User> createUsers(int count) {
+	private List<User> createUsers(int count, List<String> usernames, List<String> emails, List<String> nicknames) {
 		List<User> users = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			User user = User.builder()
-				.username(FakerExample.generateUsername())
-				.password(FakerExample.generatePassword())
-				.email(FakerExample.generateEmail())
-				.nickname(FakerExample.generateNickname())
-				.introduction(FakerExample.generateIntroduction())
+				.username(usernames.get(i))
+				.password(passwordEncoder.encode(DataGenerator.generatePassword()))
+				.email(emails.get(i))
+				.nickname(nicknames.get(i))
+				.introduction(DataGenerator.generateIntroduction())
 				.role(User.Role.USER)
 				.status(User.Status.NORMAL)
 				.build();
@@ -59,8 +68,8 @@ public class DataLoader implements CommandLineRunner {
 		List<Board> boards = new ArrayList<>();
 		for (User user : users) {
 			Board board = Board.builder()
-				.name(FakerExample.generateBoardName())
-				.description(FakerExample.generateBoardDescription())
+				.name(DataGenerator.generateBoardName())
+				.description(DataGenerator.generateBoardDescription())
 				.user(user)
 				.build();
 			boards.add(boardRepository.save(board));
@@ -68,38 +77,40 @@ public class DataLoader implements CommandLineRunner {
 		return boards;
 	}
 
-	private List<Section> createSections(List<Board> boards) {
+	private List<Section> createSections(List<Board> boards, List<String> sectionContents) {
 		List<Section> sections = new ArrayList<>();
-		int position = 0;
+		int contentPosition = 0;
 		for (Board board : boards) {
 			for (int i = 0; i < 3; i++) {
 				Section section = Section.builder()
-					.contents(FakerExample.generateSectionContents())
-					.position(position++)
+					.contents(sectionContents.get(contentPosition))
+					.position(i)
 					.user(board.getUser())
 					.board(board)
 					.build();
 				sections.add(sectionRepository.save(section));
+				contentPosition++;
 			}
 		}
 		return sections;
 	}
 
-	private List<Card> createCards(List<Section> sections) {
+	private List<Card> createCards(List<Section> sections, List<String> cardTitles) {
 		List<Card> cards = new ArrayList<>();
-		int position = 0;
+		int titlePosition = 0;
 		for (Section section : sections) {
 			for (int i = 0; i < 10; i++) {
 				Card card = Card.builder()
-					.title(FakerExample.generateCardTitle())
-					.contents(FakerExample.generateCardContents())
-					.dueDate(FakerExample.generateDueDate())
-					.position(position++)
+					.title(cardTitles.get(titlePosition))
+					.contents(DataGenerator.generateCardContents())
+					.dueDate(DataGenerator.generateDueDate())
+					.position(i)
 					.user(section.getUser())
 					.board(section.getBoard())
 					.section(section)
 					.build();
 				cards.add(cardRepository.save(card));
+				titlePosition++;
 			}
 		}
 		return cards;
@@ -109,7 +120,7 @@ public class DataLoader implements CommandLineRunner {
 		for (Card card : cards) {
 			for (int i = 0; i < 5; i++) {
 				Comment comment = Comment.builder()
-					.contents(FakerExample.generateCommentContents())
+					.contents(DataGenerator.generateCommentContents())
 					.user(card.getUser())
 					.card(card)
 					.build();
