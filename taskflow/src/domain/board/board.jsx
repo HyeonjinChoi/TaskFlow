@@ -1,5 +1,3 @@
-// Board.jsx
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -9,6 +7,8 @@ function Board({ onLogout }) {
     const [boards, setBoards] = useState([]); // 보드 데이터 상태
     const [loading, setLoading] = useState(true); // 데이터 로딩 상태
     const [showPopup, setShowPopup] = useState(false); // 팝업 모달 상태
+    const [editBoard, setEditBoard] = useState(null); // 수정할 보드 상태
+    const [isEditMode, setIsEditMode] = useState(false); // 수정 모드 상태
 
     const fetchBoardData = async () => {
         const token = localStorage.getItem('Authorization');
@@ -18,14 +18,10 @@ function Board({ onLogout }) {
             const response = await axios.get('http://localhost:8080/api/boards', {
                 headers: {
                     Authorization: token // 토큰을 헤더에 포함해서 보냄
-                },
-                params: {
-                    page: 0
                 }
-
             });
             console.log('보드 데이터 가져오기 성공:', response.data);
-            setBoards(response.data.data.content); // 가져온 보드 데이터를 상태에 저장
+            setBoards(response.data.data.content); // 가져온 보드 데이터를 상태에 저장 // 가져온 보드 데이터를 상태에 저장
             setLoading(false); // 로딩 상태 변경
         } catch (error) {
             console.error('보드 데이터 가져오기 실패:', error);
@@ -49,12 +45,14 @@ function Board({ onLogout }) {
     };
 
     const handleAddBoard = () => {
-        setShowPopup(true); // 보더 추가하기 버튼을 누르면 팝업창을 열기
+        setEditBoard(null); // 추가 모드일 때는 보드 데이터가 없으므로 null 설정
+        setIsEditMode(false); // 추가 모드로 설정
+        setShowPopup(true); // 팝업창 열기
     };
 
-    const handleClosePopup = () => {
+    const handleClosePopup = (isDataChanged) => {
         setShowPopup(false); // 팝업창을 닫을 때
-        fetchBoardData(); // 팝업창 닫을 때 보드 목록 다시 가져오기
+        if (isDataChanged) fetchBoardData(); // 데이터가 변경되었으면 보드 목록 다시 가져오기
     };
 
     const handleDeleteBoard = async (boardId) => {
@@ -74,6 +72,12 @@ function Board({ onLogout }) {
                 // 에러 처리
             }
         }
+    };
+
+    const handleEditBoard = (board) => {
+        setEditBoard(board); // 수정할 보드 설정
+        setIsEditMode(true); // 수정 모드로 설정
+        setShowPopup(true); // 팝업창 열기
     };
 
     return (
@@ -100,6 +104,8 @@ function Board({ onLogout }) {
                                     <p>{board.description}</p>
                                     <p>작성일: {board.createdAt}</p>
                                     <p>수정일: {board.modifiedAt}</p>
+                                    {/* 수정 버튼 */}
+                                    <button onClick={() => handleEditBoard(board)}>수정</button>
                                     {/* 삭제 버튼 */}
                                     <button onClick={() => handleDeleteBoard(board.id)}>삭제</button>
                                 </div>
@@ -111,7 +117,11 @@ function Board({ onLogout }) {
                 )}
             </main>
             {showPopup && (
-                <BoardForm onClose={handleClosePopup} /> // 팝업창 컴포넌트 렌더링
+                <BoardForm
+                    onClose={handleClosePopup}
+                    board={editBoard}
+                    mode={isEditMode ? 'edit' : 'add'} // 수정 모드일 때 'edit' 전달
+                />
             )}
         </div>
     );
