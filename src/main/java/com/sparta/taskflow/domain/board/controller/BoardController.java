@@ -7,6 +7,8 @@ import com.sparta.taskflow.domain.board.service.BoardInvitationService;
 import com.sparta.taskflow.domain.board.service.BoardService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,12 +37,15 @@ public class BoardController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getBoards() {
-        List<BoardResDto> responseDto = boardService.getBoards();
+    public ResponseEntity<?> getBoards(
+        @RequestParam int page) {
+
+        Page<BoardResDto> responseDto = boardService.getBoards(page);
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
-                , "보드 전체 조회"
-                , responseDto));
+            , "보드 전체 조회"
+            , responseDto));
     }
+
 
     @GetMapping("/{boardId}")
     public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
