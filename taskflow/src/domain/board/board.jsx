@@ -18,10 +18,13 @@ function Board({ onLogout }) {
             const response = await axios.get('http://localhost:8080/api/boards', {
                 headers: {
                     Authorization: token // 토큰을 헤더에 포함해서 보냄
+                },
+                params: {
+                    page: 0
                 }
             });
             console.log('보드 데이터 가져오기 성공:', response.data);
-            setBoards(response.data.data); // 가져온 보드 데이터를 상태에 저장
+            setBoards(response.data.data.content); // 가져온 보드 데이터를 상태에 저장 // 가져온 보드 데이터를 상태에 저장
             setLoading(false); // 로딩 상태 변경
         } catch (error) {
             console.error('보드 데이터 가져오기 실패:', error);
