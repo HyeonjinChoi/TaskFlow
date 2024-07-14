@@ -29,6 +29,8 @@ function BoardDetail() {
         }
     };
 
+
+
     // 섹션 및 카드 목록 가져오기
     const fetchSections = async () => {
         try {
@@ -134,7 +136,9 @@ function BoardDetail() {
             try {
                 const token = localStorage.getItem('Authorization');
                 await axios.delete(`http://localhost:8080/api/cards/${cardId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: {
+                        Authorization: token // 토큰을 헤더에 포함해서 보냄
+                    }
                 });
                 console.log('카드 삭제 성공');
                 // 카드 삭제 후 섹션 목록을 다시 불러와서 갱신
