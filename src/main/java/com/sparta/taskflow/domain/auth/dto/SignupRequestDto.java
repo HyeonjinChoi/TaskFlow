@@ -11,7 +11,7 @@ import lombok.Setter;
 public class SignupRequestDto {
 
     @NotNull(message = "아이디를 입력해주세요.")
-    @Size(min=8, max=15, message = " 아이디는 최소 5자 이상, 15자 이하여야 합니다.")
+    @Size(min=6, max=15, message = " 아이디는 최소 6자 이상, 15자 이하여야 합니다.")
     private String username;
 
     @NotNull(message = "비밀번호를 입력해주세요.")
