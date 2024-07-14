@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import CardFormModal from './CardFormModal'; // CardFormModal 컴포넌트 import
 
 function BoardDetail() {
     const { boardId } = useParams(); // URL 파라미터에서 boardId 추출
+    const navigate = useNavigate(); // useNavigate 훅 사용
     const [board, setBoard] = useState(null); // 보드 상세 정보 상태
     const [sections, setSections] = useState([]); // 섹션 목록 상태
     const [loading, setLoading] = useState(true); // 데이터 로딩 상태
@@ -133,15 +134,24 @@ function BoardDetail() {
             try {
                 const token = localStorage.getItem('Authorization');
                 await axios.delete(`http://localhost:8080/api/cards/${cardId}`, {
-                    headers: { Authorization: token }
+                    headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log('카드 삭제 성공');
                 // 카드 삭제 후 섹션 목록을 다시 불러와서 갱신
                 fetchSections();
             } catch (error) {
-                console.error('카드 삭제 실패:', error);
+            console.error('카드 삭제 실패:', error);
+            // 오류 메시지를 콘솔에 출력하여 디버깅
+            if (error.response) {
+                console.error('응답 데이터:', error.response.data);
             }
         }
+        }
+    };
+
+    // 카드 상세 페이지로 이동하는 함수
+    const navigateToCardDetail = (cardId) => {
+        navigate(`/cards/${cardId}`);
     };
 
     return (
@@ -186,7 +196,8 @@ function BoardDetail() {
                                     {/* 카드 목록 표시 */}
                                     {section.cards && section.cards.map((card) => (
                                         <div key={card.cardId} style={{ backgroundColor: '#f9f9f9', padding: '10px', marginTop: '10px', borderRadius: '5px' }}>
-                                            <h5>{card.title}</h5>
+                                            {/* 카드 상세 페이지로 이동하는 클릭 이벤트 추가 */}
+                                            <h5 onClick={() => navigateToCardDetail(card.cardId)} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}>{card.title}</h5>
                                             <p>{card.contents}</p>
                                             <p>작성자: {card.nickname}</p>
                                             <p>작성일: {card.createdAt}</p>
