@@ -39,6 +39,10 @@ function LoginForm({ onLogin }) {
         setLoginRequest({ ...loginRequest, [name]: value });
     };
 
+    const goToSignup = () => {
+        navigate('/signup');
+    };
+
     return (
         <form onSubmit={handleSubmit}>
             <h1>로그인 페이지</h1>
@@ -53,6 +57,7 @@ function LoginForm({ onLogin }) {
             </label>
             <br/>
             <button type="submit">Login</button>
+            <button type="button" onClick={goToSignup}>Signup</button>
         </form>
     );
 }
