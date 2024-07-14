@@ -1,5 +1,7 @@
 package com.sparta.taskflow.security.service;
 
+import com.sparta.taskflow.common.exception.BusinessException;
+import com.sparta.taskflow.common.exception.ErrorCode;
 import com.sparta.taskflow.domain.board.service.BoardInvitationService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,17 @@ public class CustomSecurityExpressionRoot extends SecurityExpressionRoot impleme
     }
 
     public Boolean isCardAllowedByBoardId(Long boardId, Long userId) {
-
-        return boardInvitationService.cardAllowedByBoard(boardId, userId);
+        boolean isAllowed = boardInvitationService.cardAllowedByBoard(boardId, userId);
+        if(!isAllowed){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION_CARD);
+        }
+        return isAllowed;
     }
     public Boolean isCardAllowedByCardId(Long cardId, Long userId) {
-        return boardInvitationService.cardAllowedByCard(cardId, userId);
+        if(!boardInvitationService.cardAllowedByCard(cardId, userId)){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION_CARD);
+        }
+        return true;
     }
 
 
