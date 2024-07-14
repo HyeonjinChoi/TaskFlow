@@ -69,12 +69,12 @@ function BoardDetail() {
             }, {
                 headers: { Authorization: token }
             });
-            console.log('세션 추가 성공:', response.data);
+            console.log('섹션 추가 성공:', response.data);
             // 세션 추가 후 보드 상세 정보를 다시 불러와서 갱신
             fetchSections(); // 섹션 목록 갱신
             setContents(''); // 입력된 세션 내용 초기화
         } catch (error) {
-            console.error('세션 추가 실패:', error);
+            console.error('섹션 추가 실패:', error);
         }
     };
 
@@ -175,9 +175,9 @@ function BoardDetail() {
                                 type="text"
                                 value={contents}
                                 onChange={(e) => setContents(e.target.value)}
-                                placeholder="세션 내용 입력"
+                                placeholder="섹션 내용 입력"
                             />
-                            <button onClick={handleAddSession}>세션 추가</button>
+                            <button onClick={handleAddSession}>섹션 추가</button>
                         </div>
                     ) : (
                         <p>해당 보드 정보를 찾을 수 없습니다.</p>
@@ -188,8 +188,7 @@ function BoardDetail() {
                         {sections.map((section) => (
                             <div key={section.sectionId} style={{ flex: '0 0 25%', margin: '10px', minWidth: '200px' }}>
                                 <div style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '5px', minHeight: '100px' }}>
-                                    <h4>세션 내용</h4>
-                                    <p>{section.contents}</p>
+                                    <h4>{section.contents}</h4>
                                     <p>작성자: {section.nickname}</p>
                                     <p>작성일: {section.createdAt}</p>
                                     <p>수정일: {section.modifiedAt}</p>
