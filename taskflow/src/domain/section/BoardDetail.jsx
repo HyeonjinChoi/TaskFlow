@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import {useParams, useNavigate, Link} from 'react-router-dom';
 import CardFormModal from './CardFormModal'; // CardFormModal 컴포넌트 import
+import './BoardDetail.css'; // CSS 파일 import
 
-function BoardDetail() {
+function BoardDetail({ onLogout }) {
     const { boardId } = useParams(); // URL 파라미터에서 boardId 추출
     const navigate = useNavigate(); // useNavigate 훅 사용
     const [board, setBoard] = useState(null); // 보드 상세 정보 상태
@@ -28,8 +29,6 @@ function BoardDetail() {
             setLoading(false); // 로딩 상태 변경
         }
     };
-
-
 
     // 섹션 및 카드 목록 가져오기
     const fetchSections = async () => {
@@ -144,14 +143,23 @@ function BoardDetail() {
                 // 카드 삭제 후 섹션 목록을 다시 불러와서 갱신
                 fetchSections();
             } catch (error) {
-            console.error('카드 삭제 실패:', error);
-            // 오류 메시지를 콘솔에 출력하여 디버깅
-            if (error.response) {
-                console.error('응답 데이터:', error.response.data);
+                console.error('카드 삭제 실패:', error);
+                // 오류 메시지를 콘솔에 출력하여 디버깅
+                if (error.response) {
+                    console.error('응답 데이터:', error.response.data);
+                }
             }
         }
-        }
     };
+    const handleLogout = () => {
+        localStorage.removeItem('board');
+        onLogout();
+    };
+
+    const handboradlist = () => {
+        localStorage.removeItem('board');
+    };
+
 
     // 카드 상세 페이지로 이동하는 함수
     const navigateToCardDetail = (cardId) => {
@@ -159,68 +167,87 @@ function BoardDetail() {
     };
 
     return (
-        <div>
-            <h2>보드 상세 페이지</h2>
+        <div className="board-container">
+            <h2 className="board-title">보드 상세 페이지</h2>
             {loading ? (
                 <p>로딩 중...</p>
             ) : (
                 <div>
                     {board ? (
                         <div>
-                            <h3>보드 제목: {board.name}</h3>
-                            <p>보드 내용: {board.description}</p>
-                            <p>작성일: {board.createdAt}</p>
-                            <p>수정일: {board.modifiedAt}</p>
-                            <input
-                                type="text"
-                                value={contents}
-                                onChange={(e) => setContents(e.target.value)}
-                                placeholder="섹션 내용 입력"
-                            />
-                            <button onClick={handleAddSession}>섹션 추가</button>
+                            <h3 className="board-content">보드 제목: {board.name}</h3>
+                            <p className="board-content">보드 내용: {board.description}</p>
+                            <p className="board-info">작성일: {board.createdAt}</p>
+                            <p className="board-info">수정일: {board.modifiedAt}</p>
+                            <div className="board-title-button">
+                                <input
+                                    type="text"
+                                    value={contents}
+                                    onChange={(e) => setContents(e.target.value)}
+                                    placeholder="섹션 내용 입력"
+                                    className="section-input"
+                                />
+
+                                <button onClick={handleAddSession} className="button">섹션 추가</button>
+                                <Link to="/">
+                                    <button onClick={handleLogout}>로그아웃</button>
+                                </Link>
+
+                                <Link to="/board">
+                                    <button onClick={handboradlist}>보더 리스트</button>
+                                </Link>
+                            </div>
+
                         </div>
                     ) : (
-                        <p>해당 보드 정보를 찾을 수 없습니다.</p>
+                        <div>
+                            <p>해당 보드 정보를 찾을 수 없습니다.</p>
+                            <Link to="/board">
+                                <button onClick={handboradlist}>보더 리스트</button>
+                            </Link>
+                        </div>
+
                     )}
 
+
                     {/* 섹션 목록 표시 */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    <div className="sections-container">
                         {sections.map((section) => (
-                            <div key={section.sectionId} style={{ flex: '0 0 25%', margin: '10px', minWidth: '200px' }}>
-                                <div style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '5px', minHeight: '100px' }}>
+                            <div key={section.sectionId} className="section-card">
+                                <div>
                                     <h4>{section.contents}</h4>
                                     <p>작성자: {section.nickname}</p>
                                     <p>작성일: {section.createdAt}</p>
                                     <p>수정일: {section.modifiedAt}</p>
                                     {/* 삭제 버튼 */}
-                                    <button onClick={() => handleDeleteSession(section.sectionId)}>섹션 삭제</button>
+                                    <button onClick={() => handleDeleteSession(section.sectionId)} className="button">섹션 삭제</button>
                                     {/* 카드 추가 버튼 */}
-                                    <button onClick={() => openModal(section.sectionId)}>카드 추가</button>
+                                    <button onClick={() => openModal(section.sectionId)} className="button">카드 추가</button>
                                     {/* 카드 목록 표시 */}
                                     {section.cards && section.cards.map((card) => (
-                                        <div key={card.cardId} style={{ backgroundColor: '#f9f9f9', padding: '10px', marginTop: '10px', borderRadius: '5px' }}>
+                                        <div key={card.cardId} className="card-item">
                                             {/* 카드 상세 페이지로 이동하는 클릭 이벤트 추가 */}
-                                            <h5 onClick={() => navigateToCardDetail(card.cardId)} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}>{card.title}</h5>
+                                            <h5 onClick={() => navigateToCardDetail(card.cardId)} className="card-title">{card.title}</h5>
                                             <p>{card.contents}</p>
                                             <p>작성자: {card.nickname}</p>
                                             <p>작성일: {card.createdAt}</p>
                                             <p>수정일: {card.modifiedAt}</p>
                                             {/* 카드 삭제 버튼 */}
-                                            <button onClick={() => handleDeleteCard(card.cardId)}>카드 삭제</button>
+                                            <button onClick={() => handleDeleteCard(card.cardId)} className="button">카드 삭제</button>
                                         </div>
                                     ))}
                                 </div>
+                                {/* 모달 창 */}
+                                {showModal && selectedSectionId === section.sectionId && (
+                                    <CardFormModal
+                                        onSubmit={handleAddCard}
+                                        onClose={closeModal}
+                                    />
+                                )}
                             </div>
                         ))}
                     </div>
 
-                    {/* 모달 창 */}
-                    {showModal && (
-                        <CardFormModal
-                            onSubmit={handleAddCard}
-                            onClose={closeModal}
-                        />
-                    )}
                 </div>
             )}
         </div>
