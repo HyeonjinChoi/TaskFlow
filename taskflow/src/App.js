@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginForm from './domain/auth/login'; // LoginForm 컴포넌트 import
 import Board from './domain/board/board'; // Board 컴포넌트 import
-import BoardPage from './domain/section/boardPage';
 import SignupForm from "./domain/auth/SignupForm"; // BoardPage 컴포넌트 import
+import BoardDetail from './domain/section/BoardDetail';// BoardDetail 컴포넌트 import
+import CardForm from './domain/section/CardForm';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,7 +25,8 @@ function App() {
                 <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
                 <Route path="/signup" element={<SignupForm />} />
                 <Route path="/board" element={<Board onLogout={handleLogout} />} />
-                <Route path="/boardPage" element={<BoardPage onLogout={handleLogout} />} />
+                <Route path="/boardDetail/:boardId" element={<BoardDetail />} />
+                <Route path="/cardForm"  element={<CardForm />} />
             </Routes>
         </Router>
     );
