@@ -69,7 +69,7 @@ function SignupForm() {
             <br/>
             <label>
                 Role Password:
-                <input type="text" name="rolePassword" value={signupRequest.rolePassword} onChange={handleChange} />
+                <input type="password" name="rolePassword" value={signupRequest.rolePassword} onChange={handleChange} />
             </label>
             <br/>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}

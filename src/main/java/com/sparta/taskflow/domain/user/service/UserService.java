@@ -19,8 +19,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // 사용자 프로필 조회
+    @Transactional
     public UserProfileResDto getProfile(User user) {
-        UserProfileResDto responseDto = new UserProfileResDto(user);
+        User users = getUser(user);
+        UserProfileResDto responseDto = new UserProfileResDto(users);
         return responseDto;
     }
 
