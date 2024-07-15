@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.sparta.taskflow.common.exception.BusinessException;
 import com.sparta.taskflow.common.exception.ErrorCode;
+import com.sparta.taskflow.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ public class CardService {
 	private final BoardRepository boardRepository;
 	private final SectionRepository sectionRepository;
 	private final CardRepository cardRepository;
+	private final UserRepository userRepository;
 
 	public CardResponseDto createCard(
 		CardRequestDto requestDto, User user) {
@@ -62,18 +64,31 @@ public class CardService {
 
 
 	@Transactional(readOnly = true)
-	public Page<CardResponseDto> findCard(Long boardId, Long sectionId, int page) {
+	public Page<CardResponseDto> findCard(Long boardId, Long sectionId, int page,String username) {
 
 		Board board = findBoard(boardId);
 		Section section = findSection(sectionId);
 		Pageable pageable = PageRequest.of(page, PageSize.CARD.getSize());
+		if(username != null) {
+			User user = userRepository.findByUsername(username).orElseThrow(
+					() -> new BusinessException(ErrorCode.USER_NOT_FOUND)
+			);
+			Page<Card> cards = cardRepository.findByBoardAndSectionAndUser(board,section,pageable,user);
+			List<CardResponseDto> cardDtos = cards.stream()
+					.map(CardResponseDto::new)
+					.toList();
 
-		Page<Card> cards = cardRepository.findByBoardAndSection(board,section,pageable);
-		List<CardResponseDto> cardDtos = cards.stream()
-			.map(CardResponseDto::new)
-			.toList();
+			return new PageImpl<>(cardDtos, pageable, cards.getTotalElements());
 
-		return new PageImpl<>(cardDtos, pageable, cards.getTotalElements());
+		}else{
+			Page<Card> cards = cardRepository.findByBoardAndSection(board,section,pageable);
+			List<CardResponseDto> cardDtos = cards.stream()
+					.map(CardResponseDto::new)
+					.toList();
+
+			return new PageImpl<>(cardDtos, pageable, cards.getTotalElements());
+		}
+
 	}
 
 	@Transactional(readOnly = true)
