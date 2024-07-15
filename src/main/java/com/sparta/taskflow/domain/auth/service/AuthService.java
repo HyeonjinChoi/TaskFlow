@@ -1,5 +1,6 @@
 package com.sparta.taskflow.domain.auth.service;
 
+import com.sparta.taskflow.common.config.RestTemplateConfig;
 import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.common.exception.BusinessException;
 import com.sparta.taskflow.common.exception.ErrorCode;
@@ -32,7 +33,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
+    private final RestTemplateConfig restTemplate;
     private final JwtUtil jwtUtil;
 
     public CommonDto<SignupResponsDto> signup(SignupRequestDto signupRequestDto) {
@@ -152,7 +153,7 @@ public class AuthService {
                 .build();
         HttpEntity<LoginRequestDto> requestEntity = new HttpEntity<>(requestDto, headers);
 
-        ResponseEntity<TokenResponseDto> response = restTemplate.exchange(loginUrl, HttpMethod.POST, requestEntity, TokenResponseDto.class);
+        ResponseEntity<TokenResponseDto> response = restTemplate.restTemplate().exchange(loginUrl, HttpMethod.POST, requestEntity, TokenResponseDto.class);
 
         return response.getBody().getAccessToken();
     }
