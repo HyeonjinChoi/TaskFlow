@@ -81,7 +81,7 @@ public class BoardController {
     @TokenUpdateRequired
     @PostMapping("{boardId}/invitations")
     public ResponseEntity<?> inviteMember(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        boardInvitationService.inviteUser(boardId, reqDto);
+        boardInvitationService.inviteUser(boardId, reqDto,userDetails.getUser());
         return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
                 , "회원 초대에 성공했습니다."
                 , null));
