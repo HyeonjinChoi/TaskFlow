@@ -143,8 +143,39 @@ function BoardDetail({ onLogout }) {
         navigate(`/cards/${cardId}`);
     }
 
-    function handleOnDragEnd(result) {
-        const { destination, source } = result;
+    async function updateSectionPosition(sectionId, newPosition) {
+        try {
+            const token = localStorage.getItem('Authorization');
+            await axios.put(`http://localhost:8080/api/sections/move`, {
+                sectionId: sectionId,
+                newPosition: newPosition
+            }, {
+                headers: { Authorization: token }
+            });
+            fetchSections();
+        } catch (error) {
+            console.error('섹션 순서 업데이트 실패:', error);
+        }
+    }
+
+    async function updateCardPosition(cardId, newPosition, sectionId) {
+        try {
+            const token = localStorage.getItem('Authorization');
+            await axios.put(`http://localhost:8080/api/cards/move`, {
+                cardId: cardId,
+                newPosition: newPosition,
+                sectionId: sectionId
+            }, {
+                headers: { Authorization: token }
+            });
+            fetchSections();
+        } catch (error) {
+            console.error('카드 순서 업데이트 실패:', error);
+        }
+    }
+
+    async function handleOnDragEnd(result) {
+        const { destination, source, draggableId, type } = result;
 
         if (!destination) return;
 
@@ -152,11 +183,45 @@ function BoardDetail({ onLogout }) {
             return; // 위치가 변경되지 않은 경우 아무 작업도 하지 않음
         }
 
-        const newSections = Array.from(sections);
-        const [removed] = newSections.splice(source.index, 1);
-        newSections.splice(destination.index, 0, removed);
+        if (type === 'SECTION') {
+            const newSections = Array.from(sections);
+            const [movedSection] = newSections.splice(source.index, 1);
+            newSections.splice(destination.index, 0, movedSection);
 
-        setSections(newSections); // 상태 업데이트
+            setSections(newSections); // 상태 업데이트
+
+            await updateSectionPosition(movedSection.sectionId, destination.index);
+        } else if (type === 'CARD') {
+            const startSectionIndex = sections.findIndex(section => section.sectionId.toString() === source.droppableId);
+            const endSectionIndex = sections.findIndex(section => section.sectionId.toString() === destination.droppableId);
+
+            if (startSectionIndex === -1 || endSectionIndex === -1) return;
+
+            const startSection = sections[startSectionIndex];
+            const endSection = sections[endSectionIndex];
+
+            const newStartCards = Array.from(startSection.cards);
+            const [movedCard] = newStartCards.splice(source.index, 1);
+
+            if (startSection === endSection) {
+                newStartCards.splice(destination.index, 0, movedCard);
+                const newSections = Array.from(sections);
+                newSections[startSectionIndex].cards = newStartCards;
+
+                setSections(newSections);
+                await updateCardPosition(movedCard.cardId, destination.index, startSection.sectionId);
+            } else {
+                const newEndCards = Array.from(endSection.cards);
+                newEndCards.splice(destination.index, 0, movedCard);
+
+                const newSections = Array.from(sections);
+                newSections[startSectionIndex].cards = newStartCards;
+                newSections[endSectionIndex].cards = newEndCards;
+
+                setSections(newSections);
+                await updateCardPosition(movedCard.cardId, destination.index, endSection.sectionId);
+            }
+        }
     }
 
     return (
@@ -198,7 +263,7 @@ function BoardDetail({ onLogout }) {
                         </div>
                     )}
                     <DragDropContext onDragEnd={handleOnDragEnd}>
-                        <Droppable droppableId="droppable-sections">
+                        <Droppable droppableId="droppable-sections" type="SECTION">
                             {(provided) => (
                                 <div
                                     {...provided.droppableProps}
@@ -221,16 +286,39 @@ function BoardDetail({ onLogout }) {
                                                         <p>수정일: {section.modifiedAt}</p>
                                                         <button onClick={() => handleDeleteSession(section.sectionId)} className="button">섹션 삭제</button>
                                                         <button onClick={() => openModal(section.sectionId)} className="button">카드 추가</button>
-                                                        {section.cards && section.cards.map((card) => (
-                                                            <div key={card.cardId} className="card-item">
-                                                                <h5 onClick={() => navigateToCardDetail(card.cardId)} className="card-title">{card.title}</h5>
-                                                                <p>{card.contents}</p>
-                                                                <p>작성자: {card.nickname}</p>
-                                                                <p>작성일: {card.createdAt}</p>
-                                                                <p>수정일: {card.modifiedAt}</p>
-                                                                <button onClick={() => handleDeleteCard(card.cardId)} className="button">카드 삭제</button>
-                                                            </div>
-                                                        ))}
+                                                        <Droppable droppableId={section.sectionId.toString()} type="CARD">
+                                                            {(provided) => (
+                                                                <div
+                                                                    {...provided.droppableProps}
+                                                                    ref={provided.innerRef}
+                                                                    className="cards-container"
+                                                                >
+                                                                    {section.cards && section.cards.map((card, index) => (
+                                                                        <Draggable key={card.cardId.toString()} draggableId={card.cardId.toString()} index={index}>
+                                                                            {(provided) => (
+                                                                                <div
+                                                                                    ref={provided.innerRef}
+                                                                                    {...provided.draggableProps}
+                                                                                    {...provided.dragHandleProps}
+                                                                                    className="card-item"
+                                                                                >
+                                                                                    <h5 onClick={() => navigateToCardDetail(card.cardId)}
+                                                                                        className="card-title">{card.title}</h5>
+                                                                                    <p>{card.contents}</p>
+                                                                                    <p>작성자: {card.nickname}</p>
+                                                                                    <p>작성일: {card.createdAt}</p>
+                                                                                    <p>수정일: {card.modifiedAt}</p>
+                                                                                    <button onClick={() => handleDeleteCard(card.cardId)}
+                                                                                            className="button">카드 삭제
+                                                                                    </button>
+                                                                                </div>
+                                                                            )}
+                                                                        </Draggable>
+                                                                    ))}
+                                                                    {provided.placeholder}
+                                                                </div>
+                                                            )}
+                                                        </Droppable>
                                                     </div>
                                                     {showModal && selectedSectionId === section.sectionId && (
                                                         <CardFormModal

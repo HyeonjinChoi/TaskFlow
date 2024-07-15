@@ -110,4 +110,22 @@ public class AuthService {
         logout.deleteRefreshToken();
         return "로그아웃이 완료되었습니다.";
     }
+
+    @Transactional
+    public TokenResponseDto refresh( User user , HttpServletResponse httpResponse) {
+
+        User logout = userRepository.findById(user.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        jwtUtil.isTokenValidate(user.getRefreshToken());
+
+        String accessToken = jwtUtil.createAccessToken(user.getId(), user.getUsername(),user.getEmail(), user.getRole(), user.getStatus(), user.getNickname());
+        String refreshToken = jwtUtil.createRefreshToken();
+
+        user.addRefreshToken(refreshToken);
+        httpResponse.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
+
+        return new TokenResponseDto(accessToken);
+
+    }
 }

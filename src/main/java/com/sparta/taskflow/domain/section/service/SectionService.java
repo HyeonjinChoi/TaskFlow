@@ -7,10 +7,7 @@ import com.sparta.taskflow.common.exception.BusinessException;
 import com.sparta.taskflow.common.exception.ErrorCode;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +60,7 @@ public class SectionService {
 			Long boardId, int page) {
 
 		Board board = findBoard(boardId);
-		Pageable pageable = PageRequest.of(page, PageSize.SECTION.getSize());
+		Pageable pageable = PageRequest.of(page, PageSize.SECTION.getSize(), Sort.by(Sort.Direction.ASC, "position"));
 
 		Page<Section> sections = sectionRepository.findByBoard(board, pageable);
 		List<SectionResponseDto> sectionDtos = sections.stream()
@@ -104,20 +101,12 @@ public class SectionService {
 	}
 
 	@Transactional
-	public void updateSectionPosition(
-		UpdateSectionPositionDto updateSectionPositionDto) {
-
+	public void updateSectionPosition(UpdateSectionPositionDto updateSectionPositionDto) {
 		Section section = getSection(updateSectionPositionDto.getSectionId());
-
-		if (!Objects.equals(section.getUser().getId(), updateSectionPositionDto.getUserId())) {
-			throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION);
-		}
 
 		int newPosition = updateSectionPositionDto.getNewPosition();
 		int oldPosition = section.getPosition();
-		Board board = section.getBoard();
-
-		List<Section> sections = sectionRepository.findByBoardOrderByPositionAsc(board);
+		List<Section> sections = sectionRepository.findByBoardOrderByPositionAsc(section.getBoard());
 
 		sections.forEach(s -> {
 			if (newPosition < oldPosition && s.getPosition() >= newPosition && s.getPosition() < oldPosition) {
@@ -131,6 +120,7 @@ public class SectionService {
 
 		sectionRepository.saveAll(sections);
 	}
+
 
 	//:::::::::::::::// tool box //::::::::::::::://
 
