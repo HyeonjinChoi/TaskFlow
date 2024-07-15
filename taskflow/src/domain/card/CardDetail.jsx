@@ -28,11 +28,22 @@ function CardDetail() {
         const fetchComments = async () => {
             try {
                 const token = localStorage.getItem('Authorization');
-                const response = await axios.get(`http://localhost:8080/api/comments?cardId=${cardId}`, {
+                const response = await axios.get(`http://localhost:8080/api/comments`, {
+                    params: { cardId: cardId, page: 0 },
                     headers: { Authorization: token }
                 });
                 console.log('댓글 가져오기 성공:', response.data);
-                setComments(response.data.data);
+
+                // response.data.data는 백엔드에서 반환한 데이터의 리스트 부분입니다.
+                // 여기서 각각의 comment 객체를 CommentResponseDto로 매핑합니다.
+                const mappedComments = response.data.data.map(comment => ({
+                    commentId: comment.commentId,
+                    contents: comment.contents,
+                    createdAt: comment.createdAt,
+                    modifiedAt: comment.modifiedAt
+                }));
+
+                setComments(mappedComments);  // 매핑된 데이터로 상태를 업데이트합니다.
             } catch (error) {
                 console.error('댓글 가져오기 실패:', error);
             }

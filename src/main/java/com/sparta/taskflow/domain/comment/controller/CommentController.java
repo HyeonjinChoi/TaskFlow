@@ -48,8 +48,11 @@ public class CommentController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> getCardDetails(@RequestBody CommentDeleteReqestDto requestDto, @RequestParam(defaultValue = "0") int page) {
-        List<CommentResponseDto> responseDto = commentService.getComments(requestDto.getCardId(), page, PageSize.COMMENT.getSize());
+    public ResponseEntity<CommonDto<List<CommentResponseDto>>> getComments(
+            @RequestParam Long cardId,
+            @RequestParam(defaultValue = "0") int page // 기본값 0으로 설정
+    ) {
+        List<CommentResponseDto> responseDto = commentService.getComments(cardId, page, PageSize.COMMENT.getSize());
 
         CommonDto<List<CommentResponseDto>> response = new CommonDto<>(HttpStatus.OK.value(), "카드 조회에 성공하셨습니다.", responseDto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
