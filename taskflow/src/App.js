@@ -6,6 +6,9 @@ import SignupForm from "./domain/auth/SignupForm"; // BoardPage 컴포넌트 imp
 import BoardDetail from './domain/section/BoardDetail'; // BoardDetail 컴포넌트 import
 import CardForm from './domain/section/CardForm';
 import CardDetail from "./domain/card/CardDetail";
+import UserProfile from "./domain/user/UserProfile";
+import UserUpdateModal from "./domain/user/UserUpdateModal";
+import UserPasswordModal from "./domain/user/UserPasswordModal";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,6 +29,7 @@ function App() {
                 <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
                 <Route path="/signup" element={<SignupForm />} />
                 <Route path="/board" element={<Board onLogout={handleLogout} />} />
+                <Route path="/UserProfile" element={<UserProfile/>} />
                 <Route path="/boardDetail" element={<BoardDetail onLogout={handleLogout} />} />
                 <Route path="/boardDetail/:boardId" element={<BoardDetail onLogout={handleLogout} />} />
                 <Route path="/cardForm" element={<CardForm />} />

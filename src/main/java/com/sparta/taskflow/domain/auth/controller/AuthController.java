@@ -43,5 +43,12 @@ public class AuthController {
     public ResponseEntity<String> logout(@AuthenticationPrincipal UserDetailsImpl userPrincipal) {
         return ResponseEntity.ok().body(authService.logout(userPrincipal.getUser()));
     }
+
+    // 로그아웃
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponseDto> refresh(@AuthenticationPrincipal UserDetailsImpl userPrincipal ,HttpServletResponse httpResponse) {
+        return ResponseEntity.ok(authService.refresh(userPrincipal.getUser(),httpResponse));
+    }
+
 }
 

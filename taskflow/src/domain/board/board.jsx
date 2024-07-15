@@ -91,8 +91,9 @@ function Board({ onLogout }) {
                 setBoards([]);
                 setPage(0);
             } catch (error) {
-                console.error('보드 삭제 실패:', error);
+                console.error('보드 삭제 실패:', error.response.data.message);
                 // 에러 처리
+                alert(error.response.data.message);
             }
         }
     };
@@ -113,12 +114,27 @@ function Board({ onLogout }) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [handleScroll]);
 
+    // 스크롤이 맨 아래로 내려갔을 때 추가 데이터를 가져오기 위한 로직
+    useEffect(() => {
+        const handleScrollToBottom = () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                fetchBoardData(page); // 페이지를 증가시켜 추가 데이터를 가져옴
+            }
+        };
+
+        window.addEventListener('scroll', handleScrollToBottom);
+        return () => window.removeEventListener('scroll', handleScrollToBottom);
+    }, [fetchBoardData, page]); // fetchBoardData와 page를 의존성 배열에 추가
+
     return (
         <div>
             <header>
                 <h1>보더 페이지</h1>
                 <Link to="/">
                     <button onClick={handleLogout}>로그아웃</button>
+                </Link>
+                <Link to="/userProfile">
+                    <button>유저 프로필</button>
                 </Link>
                 <button onClick={handleAddBoard}>보드 추가</button>
             </header>
