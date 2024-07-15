@@ -159,7 +159,6 @@ function BoardDetail({ onLogout }) {
         setSections(newSections); // 상태 업데이트
     }
 
-
     return (
         <div className="board-container">
             <h2 className="board-title">보드 상세 페이지</h2>
@@ -201,9 +200,13 @@ function BoardDetail({ onLogout }) {
                     <DragDropContext onDragEnd={handleOnDragEnd}>
                         <Droppable droppableId="droppable-sections">
                             {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef} className="sections-container">
-                                    {sections.map((section, index) => (
-                                        <Draggable key={section.sectionId} draggableId={section.sectionId} index={index}>
+                                <div
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                    className="sections-container"
+                                >
+                                    {sections.length > 0 ? sections.map((section, index) => (
+                                        <Draggable key={section.sectionId.toString()} draggableId={section.sectionId.toString()} index={index}>
                                             {(provided) => (
                                                 <div
                                                     ref={provided.innerRef}
@@ -238,7 +241,9 @@ function BoardDetail({ onLogout }) {
                                                 </div>
                                             )}
                                         </Draggable>
-                                    ))}
+                                    )) : (
+                                        <p>섹션이 없습니다. 새 섹션을 추가해 주세요.</p>
+                                    )}
                                     {provided.placeholder}
                                 </div>
                             )}
