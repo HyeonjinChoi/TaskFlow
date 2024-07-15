@@ -22,6 +22,8 @@ function CardDetail() {
                 setCard(response.data.data);
             } catch (error) {
                 console.error('카드 상세 정보 가져오기 실패:', error);
+                const errorMessage = JSON.parse(error.request.responseText).message;
+                alert(`${errorMessage}`);
             } finally {
                 setLoading(false);
             }
@@ -47,6 +49,8 @@ function CardDetail() {
                 setComments(mappedComments);
             } catch (error) {
                 console.error('댓글 가져오기 실패:', error);
+                const errorMessage = JSON.parse(error.request.responseText).message;
+                alert(`${errorMessage}`);
             }
         };
 

@@ -31,7 +31,8 @@ function LoginForm({ onLogin }) {
         } catch (error) {
             // 로그인 실패 시 처리 로직
             console.error('Login failed:', error);
-        }
+            const errorMessage = JSON.parse(error.request.responseText).message;
+            alert(`${errorMessage}`);        }
     };
 
     const handleChange = (e) => {

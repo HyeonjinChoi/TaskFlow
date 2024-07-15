@@ -14,11 +14,8 @@ import java.time.Duration;
 public class RestTemplateConfig {
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-        return restTemplateBuilder
-                .setReadTimeout(Duration.ofSeconds(3))
-                .setConnectTimeout(Duration.ofSeconds(3))
-                .build();
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
     @PersistenceContext

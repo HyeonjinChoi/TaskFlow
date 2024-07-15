@@ -28,7 +28,7 @@ public class BoardInvitationService {
 
         Board board = boardService.findBoard(boardId);
 
-        User user = userRepository.findByUsername(reqDto.getUsername()).orElseThrow(
+        User user = userRepository.findByNickname(reqDto.getUsername()).orElseThrow(
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 

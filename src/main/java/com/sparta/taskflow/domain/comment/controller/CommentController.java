@@ -1,5 +1,6 @@
 package com.sparta.taskflow.domain.comment.controller;
 
+import com.sparta.taskflow.common.aop.TokenUpdateRequired;
 import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.common.size.PageSize;
 import com.sparta.taskflow.domain.comment.dto.CommentDeleteReqestDto;
@@ -24,6 +25,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+    @TokenUpdateRequired
     @PostMapping("")
     public ResponseEntity<?> createComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis ) {
         CommentResponseDto responseDto = commentService.createComment(requestDto, userDetailis.getUser());
@@ -31,8 +33,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-
-
+    @TokenUpdateRequired
     @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis, @PathVariable("commentId") Long commentId) {
         CommentResponseDto responseDto = commentService.updateComment(requestDto, userDetailis.getUser(), commentId);
@@ -41,12 +42,14 @@ public class CommentController {
 
     }
 
+    @TokenUpdateRequired
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@RequestBody CommentDeleteReqestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis,  @PathVariable("commentId") Long commentId) {
         commentService.deleteComment(requestDto, userDetailis.getUser(), commentId);
         return ResponseEntity.status(HttpStatus.OK).body("답글 삭제에 성공하셨습니다.");
     }
 
+    @TokenUpdateRequired
     @GetMapping()
     public ResponseEntity<CommonDto<List<CommentResponseDto>>> getComments(
             @RequestParam Long cardId,
