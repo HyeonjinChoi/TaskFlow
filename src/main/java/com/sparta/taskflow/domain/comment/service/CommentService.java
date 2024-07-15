@@ -81,10 +81,10 @@ public class CommentService {
 
 
 
-    public List<CommentResponseDto> getComments(CommentDeleteReqestDto requestDto, int page, int size) {
+    public List<CommentResponseDto> getComments(Long cardId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
-        Card card = getCard(requestDto.getCardId());
+        Card card = getCard(cardId);
         Page<Comment> commentPage = commentRepository.findByCard(card, pageable);
         if (commentPage == null) {
             throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);

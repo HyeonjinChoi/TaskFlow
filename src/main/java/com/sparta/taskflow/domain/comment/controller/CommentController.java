@@ -31,6 +31,8 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+
+
     @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis, @PathVariable("commentId") Long commentId) {
         CommentResponseDto responseDto = commentService.updateComment(requestDto, userDetailis.getUser(), commentId);
@@ -45,12 +47,12 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body("답글 삭제에 성공하셨습니다.");
     }
 
-    @GetMapping("/{commentId}")
-    public ResponseEntity<?> getComment(@RequestBody CommentDeleteReqestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetailis,  @RequestParam(defaultValue = "1") int page) {
-        List<CommentResponseDto> responseDto = commentService.getComments(requestDto, page, PageSize.COMMENT.getSize());
-        CommonDto<List<CommentResponseDto>> response = new CommonDto<>(HttpStatus.OK.value(), "댓글 수정에 성공하셨습니다", responseDto);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    @GetMapping()
+    public ResponseEntity<?> getCardDetails(@RequestBody CommentDeleteReqestDto requestDto, @RequestParam(defaultValue = "0") int page) {
+        List<CommentResponseDto> responseDto = commentService.getComments(requestDto.getCardId(), page, PageSize.COMMENT.getSize());
 
+        CommonDto<List<CommentResponseDto>> response = new CommonDto<>(HttpStatus.OK.value(), "카드 조회에 성공하셨습니다.", responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 
