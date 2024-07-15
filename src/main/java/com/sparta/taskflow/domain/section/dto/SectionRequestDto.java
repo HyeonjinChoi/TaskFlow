@@ -5,6 +5,5 @@ import lombok.Getter;
 @Getter
 public class SectionRequestDto {
 	private String contents;
-	private Long userId;
 	private Long boardId;
 }
