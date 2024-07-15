@@ -203,7 +203,7 @@ function BoardDetail({ onLogout }) {
                             {(provided) => (
                                 <div {...provided.droppableProps} ref={provided.innerRef} className="sections-container">
                                     {sections.map((section, index) => (
-                                        <Draggable key={section.sectionId} draggableId={section.sectionId.toString()} index={index}>
+                                        <Draggable key={section.sectionId} draggableId={section.sectionId} index={index}>
                                             {(provided) => (
                                                 <div
                                                     ref={provided.innerRef}
