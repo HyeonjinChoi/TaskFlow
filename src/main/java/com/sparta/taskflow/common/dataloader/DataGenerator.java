@@ -57,7 +57,7 @@ public class DataGenerator {
 	}
 
 	public static String generateBoardDescription() {
-		return generateContents();
+		return faker.lorem().sentence();
 	}
 
 	// Section data
@@ -79,7 +79,7 @@ public class DataGenerator {
 	}
 
 	public static String generateCardContents() {
-		return generateContents();
+		return faker.lorem().sentence();
 	}
 
 	public static LocalDateTime generateDueDate() {
@@ -93,9 +93,9 @@ public class DataGenerator {
 
 	private static String generateContents() {
 		StringBuilder content = new StringBuilder();
-		while (content.length() < 255) {
+		while (content.length() < 50) {
 			String sentence = faker.lorem().sentence();
-			if (content.length() + sentence.length() > 255) {
+			if (content.length() + sentence.length() > 50) {
 				break;
 			}
 			content.append(sentence).append(" ");
