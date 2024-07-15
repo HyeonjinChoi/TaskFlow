@@ -13,7 +13,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 	boolean existsByTitleAndSection(String title, Section section);
 	int countBySection(Section section);
 
-	Page<Card> findByBoard(Board board, Pageable pageable);
 	Page<Card> findByBoardAndSection(Board board,  Section section ,Pageable pageable);
 
     Page<Card> findByBoardAndSectionAndUser(Board board, Section section, Pageable pageable, User user);

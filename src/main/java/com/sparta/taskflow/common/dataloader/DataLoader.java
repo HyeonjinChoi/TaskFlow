@@ -1,7 +1,9 @@
 package com.sparta.taskflow.common.dataloader;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.springframework.boot.CommandLineRunner;
@@ -37,33 +39,33 @@ public class DataLoader implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		int userCount = 30;
+		int userCount = 1000;
 		List<String> usernames = DataGenerator.generateUniqueUsernames(userCount);
 		List<String> emails = DataGenerator.generateUniqueEmails(userCount);
 		List<String> nicknames = DataGenerator.generateUniqueNicknames(userCount);
-		List<String> sectionContents = DataGenerator.generateUniqueSectionContents(userCount * 3);
-		List<String> cardTitles = DataGenerator.generateUniqueCardTitles(userCount * 3 * 10);
+		List<String> sectionContents = DataGenerator.generateUniqueSectionContents(userCount * 2);
+		List<String> cardTitles = DataGenerator.generateUniqueCardTitles(userCount * 2 * 3);
 
 		List<User> users = createUsers(userCount, usernames, emails, nicknames);
 		List<Board> boards = createBoards(users);
 		List<Section> sections = createSections(boards, sectionContents);
 		List<Card> cards = createCards(sections, cardTitles);
-		createComments(cards);
+		// createComments(cards);
 	}
 
 	private List<User> createUsers(int count, List<String> usernames, List<String> emails, List<String> nicknames) {
 		List<User> users = new ArrayList<>();
 		Random random = new Random();
 		for (int i = 0; i < count; i++) {
-			User.Role role = random.nextBoolean() ? User.Role.USER : User.Role.MANAGER;
+			User.Role role = random.nextBoolean() ? User.Role.MANAGER : User.Role.USER;
 			User user = User.builder()
 				.username(usernames.get(i))
-				.password(passwordEncoder.encode(DataGenerator.generatePassword()))
+				// .password(passwordEncoder.encode(DataGenerator.generatePassword()))
 				.email(emails.get(i))
 				.nickname(nicknames.get(i))
 				.introduction(DataGenerator.generateIntroduction())
 				.role(role)
-				.status(User.Status.NORMAL)
+				// .status(User.Status.NORMAL)
 				.build();
 			users.add(userRepository.save(user));
 		}
@@ -81,14 +83,21 @@ public class DataLoader implements CommandLineRunner {
 					.build();
 				boards.add(boardRepository.save(board));
 
+				List<User> userRoleUsers = new ArrayList<>();
 				for (User invitee : users) {
-					if (invitee.getRole() == User.Role.USER) {
-						BoardInvitation invitation = BoardInvitation.builder()
-							.user(invitee)
-							.board(board)
-							.build();
-						boardInvitationRepository.save(invitation);
+					if (Objects.equals(invitee.getRole(), User.Role.USER)) {
+						userRoleUsers.add(invitee);
 					}
+				}
+
+				Collections.shuffle(userRoleUsers);
+				for (int i = 0; i < 2; i++) {
+					User invitee = userRoleUsers.get(i);
+					BoardInvitation invitation = BoardInvitation.builder()
+						.user(invitee)
+						.board(board)
+						.build();
+					boardInvitationRepository.save(invitation);
 				}
 			}
 		}
@@ -119,7 +128,7 @@ public class DataLoader implements CommandLineRunner {
 		for (Section section : sections) {
 			List<BoardInvitation> invitations = boardInvitationRepository.findByBoard(section.getBoard());
 			List<User> invitedUsers = invitations.stream().map(BoardInvitation::getUser).toList();
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 3; i++) {
 				User cardUser = invitedUsers.get(new Random().nextInt(invitedUsers.size()));
 				Card card = Card.builder()
 					.title(cardTitles.get(titlePosition))
@@ -139,7 +148,7 @@ public class DataLoader implements CommandLineRunner {
 
 	private void createComments(List<Card> cards) {
 		for (Card card : cards) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 2; i++) {
 				Comment comment = Comment.builder()
 					.contents(DataGenerator.generateCommentContents())
 					.user(card.getUser())
