@@ -83,4 +83,5 @@
 .cards-container > *{
     margin-top: 10px;
     border: 2px solid #c6c6c6;
+    background-color: white;
 }

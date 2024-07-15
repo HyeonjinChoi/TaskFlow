@@ -24,15 +24,19 @@ public class BoardInvitationService {
     private final CardRepository cardRepository;
     private final BoardService boardService;
 
-    public void inviteUser(Long boardId, BoardInviteReqDto reqDto) {
+    public void inviteUser(Long boardId, BoardInviteReqDto reqDto , User userDetails) {
 
         Board board = boardService.findBoard(boardId);
+
+        User users = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(
+                () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
+        );
 
         User user = userRepository.findByNickname(reqDto.getUsername()).orElseThrow(
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 
-        if(!boardService.isBoardByUser(boardId, user.getId())) {
+        if(!boardService.isBoardByUser(board.getId(), users.getId())) {
             throw new BusinessException(ErrorCode.BOARD_NO_PERMISSION);
         }
 
