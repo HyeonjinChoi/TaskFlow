@@ -101,9 +101,9 @@ public class CardController {
 	@PutMapping("/move")
 	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#updateCardPositionDto.cardId, #userDetails.user.id)")
 	public ResponseEntity<CommonDto<Void>> updateCardPosition(
-		@RequestBody UpdateCardPositionDto updateCardPositionDto, UserDetailsImpl userDetails) {
+		@RequestBody UpdateCardPositionDto updateCardPositionDto,@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		cardService.updateCardPosition(updateCardPositionDto);
+		cardService.updateCardPosition(updateCardPositionDto,userDetails.getUser());
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 이동에 성공하였습니다.", null));

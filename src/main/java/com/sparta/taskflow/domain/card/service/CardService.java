@@ -120,14 +120,15 @@ public class CardService {
 
 	@Transactional
 	public void updateCardPosition(
-		UpdateCardPositionDto updateCardPositionDto) {
+		UpdateCardPositionDto updateCardPositionDto,
+		User user) {
 
 		Card card = findCard(updateCardPositionDto.getCardId());
 
 		Section oldSection = card.getSection();
 		Section newSection = findSection(updateCardPositionDto.getSectionId());
 
-		if (!Objects.equals(card.getUser().getId(), updateCardPositionDto.getUserId())) {
+		if (!Objects.equals(card.getUser().getId(), user.getId())) {
 			throw new BusinessException(ErrorCode.UNAUTHORIZED_ACTION);
 		}
 
