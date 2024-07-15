@@ -12,6 +12,7 @@ function Board({ onLogout }) {
     const [page, setPage] = useState(0); // 현재 페이지 상태
     const [hasMore, setHasMore] = useState(true); // 추가 데이터 여부 상태
     const [fetching, setFetching] = useState(false); // 데이터 가져오는 중 여부 상태
+    const [userRole, setUserRole] = useState(null); // 사용자 권한 상태
 
     const observer = useRef(); // Intersection Observer ref
 
@@ -49,8 +50,24 @@ function Board({ onLogout }) {
         }
     };
 
+    const fetchUserRole = async () => {
+        const token = localStorage.getItem('Authorization');
+        try {
+            const response = await axios.get('http://localhost:8080/api/users', {
+                headers: {
+                    Authorization: token // 토큰을 헤더에 포함해서 보냄
+                }
+            });
+            console.log('사용자 역할 가져오기 성공:', response.data.data.role);
+            setUserRole(response.data.data.role); // 사용자 역할 설정
+        } catch (error) {
+            console.error('사용자 역할 가져오기 실패:', error);
+        }
+    };
+
     useEffect(() => {
-        fetchBoardData(page); // 초기 페이지 로드
+        fetchBoardData(0); // 초기 페이지 로드
+        fetchUserRole(); // 사용자 역할 로드
     }, []); // 컴포넌트 마운트 시 한 번만 실행
 
     const handleBoardClick = (id) => {
@@ -132,7 +149,9 @@ function Board({ onLogout }) {
                 <Link to="/userProfile">
                     <button>유저 프로필</button>
                 </Link>
-                <button onClick={handleAddBoard}>보드 추가</button>
+                {userRole === 'MANAGER' && (
+                    <button onClick={handleAddBoard}>보드 추가</button>
+                )}
             </header>
             <main style={styles.boardContainer}>
                 <div style={styles.boardGrid}>
@@ -147,8 +166,12 @@ function Board({ onLogout }) {
                                         <p>{board.description}</p>
                                         <p>작성일: {board.createdAt}</p>
                                         <p>수정일: {board.modifiedAt}</p>
-                                        <button onClick={() => handleEditBoard(board)}>수정</button>
-                                        <button onClick={() => handleDeleteBoard(board.id)}>삭제</button>
+                                        {userRole === 'MANAGER' && (
+                                            <>
+                                                <button onClick={() => handleEditBoard(board)}>수정</button>
+                                                <button onClick={() => handleDeleteBoard(board.id)}>삭제</button>
+                                            </>
+                                        )}
                                     </div>
                                 );
                             } else {
@@ -160,8 +183,12 @@ function Board({ onLogout }) {
                                         <p>{board.description}</p>
                                         <p>작성일: {board.createdAt}</p>
                                         <p>수정일: {board.modifiedAt}</p>
-                                        <button onClick={() => handleEditBoard(board)}>수정</button>
-                                        <button onClick={() => handleDeleteBoard(board.id)}>삭제</button>
+                                        {userRole === 'MANAGER' && (
+                                            <>
+                                                <button onClick={() => handleEditBoard(board)}>수정</button>
+                                                <button onClick={() => handleDeleteBoard(board.id)}>삭제</button>
+                                            </>
+                                        )}
                                     </div>
                                 );
                             }
