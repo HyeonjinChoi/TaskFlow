@@ -109,7 +109,7 @@ const UserProfile = () => {
             {profileData ? (
                 <div>
                     <p>이름: {profileData.nickname}</p>
-                    <p>아이디: {profileData.username}</p>
+                    <p>한줄소개: {profileData.introduction}</p>
                     {/* 기타 프로필 정보 */}
                 </div>
             ) : (

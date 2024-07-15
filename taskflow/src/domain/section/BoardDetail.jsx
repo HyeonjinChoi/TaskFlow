@@ -128,6 +128,7 @@ function BoardDetail({ onLogout }) {
             });
             fetchSections();
             setShowEditModal(false);
+            window.location.reload();
         } catch (error) {
             console.error('섹션 수정 실패:', error);
             const errorMessage = JSON.parse(error.request.responseText).message;
