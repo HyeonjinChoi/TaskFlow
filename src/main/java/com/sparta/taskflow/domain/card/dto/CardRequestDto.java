@@ -9,7 +9,6 @@ public class CardRequestDto {
 	private String title;
 	private String contents;
 	private LocalDateTime dueDate;
-	private Long userId;
 	private Long boardId;
 	private Long sectionId;
 }

@@ -1,14 +1,14 @@
 package com.sparta.taskflow.domain.auth.controller;
 
-import com.sparta.taskflow.domain.auth.dto.LoginRequestDto;
-import com.sparta.taskflow.domain.auth.dto.SignoutRequestDto;
-import com.sparta.taskflow.domain.auth.dto.SignupRequestDto;
-import com.sparta.taskflow.domain.auth.dto.TokenResponseDto;
+import com.sparta.taskflow.common.dto.CommonDto;
+import com.sparta.taskflow.domain.auth.dto.*;
 import com.sparta.taskflow.domain.auth.service.AuthService;
+import com.sparta.taskflow.domain.comment.dto.CommentResponseDto;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +22,11 @@ public class AuthController {
 
     // 회원 가입
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
-        return ResponseEntity.ok().body(authService.signup(signupRequestDto));
+    public ResponseEntity<?> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
+
+        CommonDto<SignupResponsDto> response = authService.signup(signupRequestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // 회원 탈퇴

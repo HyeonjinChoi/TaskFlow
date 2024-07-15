@@ -1,11 +1,9 @@
 package com.sparta.taskflow.domain.auth.service;
 
+import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.common.exception.BusinessException;
 import com.sparta.taskflow.common.exception.ErrorCode;
-import com.sparta.taskflow.domain.auth.dto.LoginRequestDto;
-import com.sparta.taskflow.domain.auth.dto.SignoutRequestDto;
-import com.sparta.taskflow.domain.auth.dto.SignupRequestDto;
-import com.sparta.taskflow.domain.auth.dto.TokenResponseDto;
+import com.sparta.taskflow.domain.auth.dto.*;
 import com.sparta.taskflow.domain.user.entity.User;
 import com.sparta.taskflow.domain.user.repository.UserRepository;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
@@ -14,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +31,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public String signup(SignupRequestDto signupRequestDto) {
+    public CommonDto<SignupResponsDto> signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String email = signupRequestDto.getEmail();
         String password = signupRequestDto.getPassword();
@@ -42,6 +41,8 @@ public class AuthService {
 
         String roles = "67mE67CA67KI7Zi4";
         User.Role role = User.Role.USER;
+        String message = "회원가입에 성공하였습니다.";
+
 
         if (userRepository.existsByEmailOrNicknameOrUsername(username, email, nickname))
             throw new BusinessException(ErrorCode.EXIST_USER);
@@ -49,22 +50,25 @@ public class AuthService {
         if(RolePassword.equals(roles)){
             role = User.Role.MANAGER;
         }
-
-        userRepository.save(User.builder()
-                                    .username(username)
-                                    .email(email)
-                                    .password(passwordEncoder.encode(password))
-                                    .nickname(nickname)
-                                    .introduction(introduction)
-                                    .role(role)
-                                    .status(User.Status.NORMAL)
-                                    .build());
+        User user = User.builder()
+                .username(username)
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .nickname(nickname)
+                .introduction(introduction)
+                .role(role)
+                .status(User.Status.NORMAL)
+                .build();
+        userRepository.save(user);
 
 
         if(RolePassword.equals(roles)){
-            return  "매니저님 회원가입이 완료되었습니다.";
+            message =   "매니저님 회원가입이 완료되었습니다.";
         }
-        return  "유저님 회원가입이 완료되었습니다.";
+
+        SignupResponsDto responseDto = new SignupResponsDto(user);
+
+        return  new CommonDto<>(HttpStatus.OK.value(), message, responseDto);
     }
 
     public String signout(SignoutRequestDto requestDto, User user) {
