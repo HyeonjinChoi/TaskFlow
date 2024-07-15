@@ -31,7 +31,7 @@ public class BoardController {
     @PostMapping
     public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResDto responseDto = boardService.createBoard(reqDto, userDetails.getUser());
-        return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.OK.value()
+        return ResponseEntity.ok().body(new CommonDto<>(HttpStatus.CREATED.value()
                 , "보드가 생성됩니다!"
                 , responseDto));
     }
