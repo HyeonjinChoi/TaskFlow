@@ -7,6 +7,7 @@ import CardFormModal from './CardFormModal';
 import SectionEditModal from './SectionEditModal';
 import InviteMemberModal from './InviteMemberModal';
 import './BoardDetail.css';
+import axios from "axios";
 
 function BoardDetail({ onLogout }) {
     const { boardId } = useParams();
@@ -22,6 +23,7 @@ function BoardDetail({ onLogout }) {
     const [editingSection, setEditingSection] = useState(null);
     const [page, setPage] = useState(0);
     const [hasMoreSections, setHasMoreSections] = useState(true);
+    const [userRole, setUserRole] = useState(null); // 사용자 권한 상태
 
     const { ref: observerRef, inView } = useInView({
         threshold: 0.1
@@ -29,6 +31,7 @@ function BoardDetail({ onLogout }) {
 
     useEffect(() => {
         fetchBoardDetail();
+        fetchUserRole();
     }, [boardId]);
 
     useEffect(() => {
@@ -74,6 +77,21 @@ function BoardDetail({ onLogout }) {
             console.error('섹션 및 카드 목록 가져오기 실패:', error);
         }
     }
+
+    const fetchUserRole = async () => {
+        const token = localStorage.getItem('Authorization');
+        try {
+            const response = await axiosInstance.get('/api/users', {
+                headers: {
+                    Authorization: token // 토큰을 헤더에 포함해서 보냄
+                }
+            });
+            console.log('사용자 역할 가져오기 성공:', response.data.data.role);
+            setUserRole(response.data.data.role); // 사용자 역할 설정
+        } catch (error) {
+            console.error('사용자 역할 가져오기 실패:', error);
+        }
+    };
 
     async function handleAddSession() {
         try {
@@ -331,22 +349,33 @@ function BoardDetail({ onLogout }) {
                             <p className="board-content">보드 내용: {board.description}</p>
                             <p className="board-info">작성일: {board.createdAt}</p>
                             <p className="board-info">수정일: {board.modifiedAt}</p>
+
                             <div className="board-title-button">
-                                <input
-                                    type="text"
-                                    value={contents}
-                                    onChange={(e) => setContents(e.target.value)}
-                                    placeholder="섹션 내용 입력"
-                                    className="section-input"
-                                />
-                                <button onClick={handleAddSession} className="button">섹션 추가</button>
+                                {userRole === 'MANAGER' && (
+                                    <>
+                                        <input
+                                            type="text"
+                                            value={contents}
+                                            onChange={(e) => setContents(e.target.value)}
+                                            placeholder="섹션 내용 입력"
+                                            className="section-input"
+                                        />
+                                        <button onClick={handleAddSession} className="button">섹션 추가</button>
+
+                                    </>
+                                )}
+
                                 <Link to="/">
-                                    <button onClick={handleLogout}>로그아웃</button>
+                                <button onClick={handleLogout}>로그아웃</button>
                                 </Link>
                                 <Link to="/board">
                                     <button onClick={handboradlist}>보드 리스트</button>
                                 </Link>
-                                <button onClick={openInviteModal} className="button">회원 초대</button>
+                                {userRole === 'MANAGER' && (
+                                    <>
+                                        <button onClick={openInviteModal} className="button">회원 초대</button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     ) : (
@@ -379,9 +408,21 @@ function BoardDetail({ onLogout }) {
                                                         <p>작성자: {section.nickname}</p>
                                                         <p>작성일: {section.createdAt}</p>
                                                         <p>수정일: {section.modifiedAt}</p>
-                                                        <button onClick={() => handleDeleteSession(section.sectionId)} className="button">섹션 삭제</button>
-                                                        <button onClick={() => openEditModal(section)} className="button">섹션 수정</button>
-                                                        <button onClick={() => openCardModal(section.sectionId)} className="button">카드 추가</button>
+                                                        {userRole === 'MANAGER' && (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleDeleteSession(section.sectionId)}
+                                                                    className="button">섹션 삭제
+                                                                </button>
+                                                                <button onClick={() => openEditModal(section)}
+                                                                        className="button">섹션 수정
+                                                                </button>
+
+                                                            </>
+                                                        )}
+                                                        <button onClick={() => openCardModal(section.sectionId)}
+                                                                className="button">카드 추가
+                                                        </button>
                                                         <Droppable droppableId={section.sectionId.toString()} type="CARD">
                                                             {(provided, snapshot) => (
                                                                 <div

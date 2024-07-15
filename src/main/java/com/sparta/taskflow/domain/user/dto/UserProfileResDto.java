@@ -13,6 +13,7 @@ public class UserProfileResDto {
     private String username;
     private String email;
     private String introduction;
+    private User.Role role;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
@@ -20,6 +21,7 @@ public class UserProfileResDto {
         this.id = user.getId();
         this.nickname = user.getNickname();
         this.username = user.getUsername();
+        this.role = user.getRole();
         this.email = user.getEmail();
         this.introduction = user.getIntroduction();
         this.createdAt = user.getCreatedAt();
