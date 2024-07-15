@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import BoardForm from './BoardForm'; // BoardForm 컴포넌트 import
@@ -12,6 +12,8 @@ function Board({ onLogout }) {
     const [page, setPage] = useState(0); // 현재 페이지 상태
     const [hasMore, setHasMore] = useState(true); // 추가 데이터 여부 상태
     const [fetching, setFetching] = useState(false); // 데이터 가져오는 중 여부 상태
+
+    const observer = useRef(); // Intersection Observer ref
 
     const fetchBoardData = async (newPage = 0) => {
         if (fetching) return; // 이미 데이터를 가져오고 있는 중이면 중복 요청 방지
@@ -74,6 +76,8 @@ function Board({ onLogout }) {
         if (isDataChanged) {
             setBoards([]); // 보드 데이터를 초기화하고
             setPage(0); // 페이지를 초기화하여 데이터를 새로 가져오기
+            fetchBoardData(0); // 초기 페이지로 데이터 가져오기
+            window.location.reload(); // 페이지 새로고침
         }
     };
 
@@ -90,6 +94,8 @@ function Board({ onLogout }) {
                 // 삭제 성공 시, 업데이트된 보드 목록 다시 가져오기
                 setBoards([]);
                 setPage(0);
+                fetchBoardData(0); // 초기 페이지로 데이터 가져오기
+                window.location.reload(); // 페이지 새로고침
             } catch (error) {
                 console.error('보드 삭제 실패:', error.response.data.message);
                 // 에러 처리
@@ -104,27 +110,16 @@ function Board({ onLogout }) {
         setShowPopup(true); // 팝업창 열기
     };
 
-    const handleScroll = useCallback(() => {
-        if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || fetching || !hasMore) return;
-        fetchBoardData(page); // 추가 데이터를 가져오는 함수 호출
-    }, [fetching, hasMore, page]); // 필요한 상태 변수들을 의존성 배열에 추가
-
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [handleScroll]);
-
-    // 스크롤이 맨 아래로 내려갔을 때 추가 데이터를 가져오기 위한 로직
-    useEffect(() => {
-        const handleScrollToBottom = () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-                fetchBoardData(page); // 페이지를 증가시켜 추가 데이터를 가져옴
+    const lastBoardElementRef = useCallback(node => {
+        if (loading) return;
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                fetchBoardData(page);
             }
-        };
-
-        window.addEventListener('scroll', handleScrollToBottom);
-        return () => window.removeEventListener('scroll', handleScrollToBottom);
-    }, [fetchBoardData, page]); // fetchBoardData와 page를 의존성 배열에 추가
+        });
+        if (node) observer.current.observe(node);
+    }, [loading, hasMore, page]);
 
     return (
         <div>
@@ -141,21 +136,35 @@ function Board({ onLogout }) {
             <main style={styles.boardContainer}>
                 <div style={styles.boardGrid}>
                     {boards.length > 0 ? (
-                        boards.map(board => (
-                            <div key={board.id} style={styles.boardItem}>
-                                {/* Link를 사용하여 클릭 시 boardDetail 페이지로 이동하도록 설정 */}
-                                <Link to={`/boardDetail/${board.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    <h2 onClick={() => handleBoardClick(board.id)}>{board.name}</h2>
-                                </Link>
-                                <p>{board.description}</p>
-                                <p>작성일: {board.createdAt}</p>
-                                <p>수정일: {board.modifiedAt}</p>
-                                {/* 수정 버튼 */}
-                                <button onClick={() => handleEditBoard(board)}>수정</button>
-                                {/* 삭제 버튼 */}
-                                <button onClick={() => handleDeleteBoard(board.id)}>삭제</button>
-                            </div>
-                        ))
+                        boards.map((board, index) => {
+                            if (boards.length === index + 1) {
+                                return (
+                                    <div ref={lastBoardElementRef} key={board.id} style={styles.boardItem}>
+                                        <Link to={`/boardDetail/${board.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            <h2 onClick={() => handleBoardClick(board.id)}>{board.name}</h2>
+                                        </Link>
+                                        <p>{board.description}</p>
+                                        <p>작성일: {board.createdAt}</p>
+                                        <p>수정일: {board.modifiedAt}</p>
+                                        <button onClick={() => handleEditBoard(board)}>수정</button>
+                                        <button onClick={() => handleDeleteBoard(board.id)}>삭제</button>
+                                    </div>
+                                );
+                            } else {
+                                return (
+                                    <div key={board.id} style={styles.boardItem}>
+                                        <Link to={`/boardDetail/${board.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            <h2 onClick={() => handleBoardClick(board.id)}>{board.name}</h2>
+                                        </Link>
+                                        <p>{board.description}</p>
+                                        <p>작성일: {board.createdAt}</p>
+                                        <p>수정일: {board.modifiedAt}</p>
+                                        <button onClick={() => handleEditBoard(board)}>수정</button>
+                                        <button onClick={() => handleDeleteBoard(board.id)}>삭제</button>
+                                    </div>
+                                );
+                            }
+                        })
                     ) : (
                         <p>사용 가능한 보드가 없습니다.</p>
                     )}

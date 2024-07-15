@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance'; // 경로 수정
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useInView } from 'react-intersection-observer';
 import CardFormModal from './CardFormModal';
 import SectionEditModal from './SectionEditModal';
 import './BoardDetail.css';
@@ -17,11 +18,22 @@ function BoardDetail({ onLogout }) {
     const [showCardModal, setShowCardModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingSection, setEditingSection] = useState(null);
+    const [page, setPage] = useState(0); // 섹션 페이지 상태 추가
+    const [hasMoreSections, setHasMoreSections] = useState(true);
+
+    const { ref: observerRef, inView } = useInView({
+        threshold: 0.1
+    });
 
     useEffect(() => {
         fetchBoardDetail();
-        fetchSections();
     }, [boardId]);
+
+    useEffect(() => {
+        if (hasMoreSections && inView) {
+            fetchSections();
+        }
+    }, [inView]);
 
     async function fetchBoardDetail() {
         try {
@@ -40,17 +52,22 @@ function BoardDetail({ onLogout }) {
     async function fetchSections() {
         try {
             const token = localStorage.getItem('Authorization');
-            const response = await axiosInstance.get(`/api/sections?boardId=${boardId}&page=0`, {
+            const response = await axiosInstance.get(`/api/sections?boardId=${boardId}&page=${page}`, {
                 headers: { Authorization: token }
             });
-            const sectionsWithCards = await Promise.all(response.data.data.content.map(async (section) => {
+            const fetchedSections = response.data.data.content;
+
+            const sectionsWithCards = await Promise.all(fetchedSections.map(async (section) => {
                 const cardsResponse = await axiosInstance.get(`/api/cards?boardId=${boardId}&sectionId=${section.sectionId}&page=0`, {
                     headers: { Authorization: token }
                 });
                 section.cards = cardsResponse.data.data.content;
                 return section;
             }));
-            setSections(sectionsWithCards);
+
+            setSections(prevSections => [...prevSections, ...sectionsWithCards]);
+            setPage(prevPage => prevPage + 1);
+            setHasMoreSections(response.data.data.content.length > 0);
         } catch (error) {
             console.error('섹션 및 카드 목록 가져오기 실패:', error);
         }
@@ -65,6 +82,8 @@ function BoardDetail({ onLogout }) {
             }, {
                 headers: { Authorization: token }
             });
+            setPage(0);
+            setSections([]);
             fetchSections();
             setContents('');
         } catch (error) {
@@ -131,6 +150,8 @@ function BoardDetail({ onLogout }) {
                 await axiosInstance.delete(`/api/sections/${sectionId}`, {
                     headers: { Authorization: token }
                 });
+                setPage(0);
+                setSections([]);
                 fetchSections();
             } catch (error) {
                 console.error('섹션 삭제 실패:', error);
@@ -291,20 +312,20 @@ function BoardDetail({ onLogout }) {
                     )}
                     <DragDropContext onDragEnd={handleOnDragEnd}>
                         <Droppable droppableId="droppable-sections" type="SECTION">
-                            {(provided) => (
+                            {(provided, snapshot) => (
                                 <div
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
-                                    className="sections-container"
+                                    className={`sections-container ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
                                 >
                                     {sections.length > 0 ? sections.map((section, index) => (
                                         <Draggable key={section.sectionId.toString()} draggableId={section.sectionId.toString()} index={index}>
-                                            {(provided) => (
+                                            {(provided, snapshot) => (
                                                 <div
                                                     ref={provided.innerRef}
                                                     {...provided.draggableProps}
                                                     {...provided.dragHandleProps}
-                                                    className="section-card"
+                                                    className={`section-card ${snapshot.isDragging ? 'dragging' : ''}`}
                                                 >
                                                     <div>
                                                         <h4>{section.contents}</h4>
@@ -315,20 +336,20 @@ function BoardDetail({ onLogout }) {
                                                         <button onClick={() => openEditModal(section)} className="button">섹션 수정</button>
                                                         <button onClick={() => openCardModal(section.sectionId)} className="button">카드 추가</button>
                                                         <Droppable droppableId={section.sectionId.toString()} type="CARD">
-                                                            {(provided) => (
+                                                            {(provided, snapshot) => (
                                                                 <div
                                                                     {...provided.droppableProps}
                                                                     ref={provided.innerRef}
-                                                                    className="cards-container"
+                                                                    className={`cards-container ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
                                                                 >
                                                                     {section.cards && section.cards.map((card, index) => (
                                                                         <Draggable key={card.cardId.toString()} draggableId={card.cardId.toString()} index={index}>
-                                                                            {(provided) => (
+                                                                            {(provided, snapshot) => (
                                                                                 <div
                                                                                     ref={provided.innerRef}
                                                                                     {...provided.draggableProps}
                                                                                     {...provided.dragHandleProps}
-                                                                                    className="card-item"
+                                                                                    className={`card-item ${snapshot.isDragging ? 'dragging' : ''}`}
                                                                                 >
                                                                                     <h5 onClick={() => navigateToCardDetail(card.cardId)}
                                                                                         className="card-title">{card.title}</h5>
@@ -344,6 +365,7 @@ function BoardDetail({ onLogout }) {
                                                                         </Draggable>
                                                                     ))}
                                                                     {provided.placeholder}
+                                                                    <div ref={observerRef} />
                                                                 </div>
                                                             )}
                                                         </Droppable>
@@ -368,6 +390,7 @@ function BoardDetail({ onLogout }) {
                                         <p>섹션이 없습니다. 새 섹션을 추가해 주세요.</p>
                                     )}
                                     {provided.placeholder}
+                                    <div ref={observerRef} />
                                 </div>
                             )}
                         </Droppable>
