@@ -21,7 +21,7 @@ public class JwtUtil {
 
     public static final String TOKEN_HEADER = "AccessToken";
     public static String TOKEN_AUTH_SCHEME = "Bearer ";
-    private final Long AccessTokenTime = 60 * 30 * 1000L;
+    private final Long AccessTokenTime = 60 * 120 * 1000L;
     private final Long RefreshTokenTime = 24 * 30 * 60 * 60 * 1000L;
 
     public static String CLAIM_ID = "id";

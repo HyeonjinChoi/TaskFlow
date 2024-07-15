@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../api/axiosInstance'; // 경로 수정
+import axiosInstance from '../../api/axiosInstance';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useInView } from 'react-intersection-observer';
 import CardFormModal from './CardFormModal';
 import SectionEditModal from './SectionEditModal';
+import InviteMemberModal from './InviteMemberModal';
 import './BoardDetail.css';
 
 function BoardDetail({ onLogout }) {
@@ -17,8 +18,9 @@ function BoardDetail({ onLogout }) {
     const [selectedSectionId, setSelectedSectionId] = useState(null);
     const [showCardModal, setShowCardModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showInviteModal, setShowInviteModal] = useState(false);
     const [editingSection, setEditingSection] = useState(null);
-    const [page, setPage] = useState(0); // 섹션 페이지 상태 추가
+    const [page, setPage] = useState(0);
     const [hasMoreSections, setHasMoreSections] = useState(true);
 
     const { ref: observerRef, inView } = useInView({
@@ -86,8 +88,11 @@ function BoardDetail({ onLogout }) {
             setSections([]);
             fetchSections();
             setContents('');
+            window.location.reload();
         } catch (error) {
             console.error('섹션 추가 실패:', error);
+            const errorMessage = JSON.parse(error.request.responseText).message;
+            alert(`${errorMessage}`);
         }
     }
 
@@ -104,8 +109,12 @@ function BoardDetail({ onLogout }) {
                 headers: { Authorization: token }
             });
             fetchSections();
+            window.location.reload();
+
         } catch (error) {
             console.error('카드 추가 실패:', error);
+            const errorMessage = JSON.parse(error.request.responseText).message;
+            alert(`${errorMessage}`);
         }
     }
 
@@ -121,6 +130,26 @@ function BoardDetail({ onLogout }) {
             setShowEditModal(false);
         } catch (error) {
             console.error('섹션 수정 실패:', error);
+            const errorMessage = JSON.parse(error.request.responseText).message;
+            alert(`${errorMessage}`);
+        }
+    }
+
+    async function handleInviteMember(username) {
+        try {
+            const token = localStorage.getItem('Authorization');
+            await axiosInstance.post(`/api/boards/${boardId}/invitations`, {
+                username: username
+            }, {
+                headers: { Authorization: token }
+            });
+            alert('회원 초대에 성공했습니다.');
+            setShowInviteModal(false);
+            window.location.reload();
+        } catch (error) {
+            console.error('회원 초대 실패:', error.request.responseText);
+            const errorMessage = JSON.parse(error.request.responseText).message;
+            alert(`${errorMessage}`);
         }
     }
 
@@ -142,6 +171,14 @@ function BoardDetail({ onLogout }) {
         setShowEditModal(false);
     }
 
+    function openInviteModal() {
+        setShowInviteModal(true);
+    }
+
+    function closeInviteModal() {
+        setShowInviteModal(false);
+    }
+
     async function handleDeleteSession(sectionId) {
         const confirmDelete = window.confirm("정말로 이 섹션을 삭제하시겠습니까?");
         if (confirmDelete) {
@@ -153,8 +190,11 @@ function BoardDetail({ onLogout }) {
                 setPage(0);
                 setSections([]);
                 fetchSections();
+                window.location.reload();
             } catch (error) {
                 console.error('섹션 삭제 실패:', error);
+                const errorMessage = JSON.parse(error.request.responseText).message;
+                alert(`${errorMessage}`);
             }
         }
     }
@@ -168,10 +208,13 @@ function BoardDetail({ onLogout }) {
                     headers: { Authorization: token }
                 });
                 fetchSections();
+                window.location.reload();
             } catch (error) {
                 console.error('카드 삭제 실패:', error);
                 if (error.response) {
                     console.error('응답 데이터:', error.response.data);
+                    const errorMessage = JSON.parse(error.request.responseText).message;
+                    alert(`${errorMessage}`);
                 }
             }
         }
@@ -184,7 +227,7 @@ function BoardDetail({ onLogout }) {
 
     function handboradlist() {
         localStorage.removeItem('board');
-        navigate('/board'); // 'board' 페이지로 이동
+        navigate('/board');
     }
 
     function navigateToCardDetail(cardId) {
@@ -203,6 +246,8 @@ function BoardDetail({ onLogout }) {
             fetchSections();
         } catch (error) {
             console.error('섹션 순서 업데이트 실패:', error);
+            const errorMessage = JSON.parse(error.request.responseText).message;
+            alert(`${errorMessage}`);
         }
     }
 
@@ -228,7 +273,7 @@ function BoardDetail({ onLogout }) {
         if (!destination) return;
 
         if (destination.droppableId === source.droppableId && destination.index === source.index) {
-            return; // 위치가 변경되지 않은 경우 아무 작업도 하지 않음
+            return;
         }
 
         if (type === 'SECTION') {
@@ -236,7 +281,7 @@ function BoardDetail({ onLogout }) {
             const [movedSection] = newSections.splice(source.index, 1);
             newSections.splice(destination.index, 0, movedSection);
 
-            setSections(newSections); // 상태 업데이트
+            setSections(newSections);
 
             await updateSectionPosition(movedSection.sectionId, destination.index);
         } else if (type === 'CARD') {
@@ -300,6 +345,7 @@ function BoardDetail({ onLogout }) {
                                 <Link to="/board">
                                     <button onClick={handboradlist}>보드 리스트</button>
                                 </Link>
+                                <button onClick={openInviteModal} className="button">회원 초대</button>
                             </div>
                         </div>
                     ) : (
@@ -397,6 +443,11 @@ function BoardDetail({ onLogout }) {
                     </DragDropContext>
                 </div>
             )}
+            <InviteMemberModal
+                isOpen={showInviteModal}
+                onClose={closeInviteModal}
+                onSubmit={handleInviteMember}
+            />
         </div>
     );
 }

@@ -19,7 +19,6 @@ function Board({ onLogout }) {
         if (fetching) return; // 이미 데이터를 가져오고 있는 중이면 중복 요청 방지
 
         const token = localStorage.getItem('Authorization');
-        console.log('저장된 토큰:', token);
         try {
             setFetching(true); // 데이터 가져오는 중으로 설정
 
@@ -100,6 +99,8 @@ function Board({ onLogout }) {
                 console.error('보드 삭제 실패:', error.response.data.message);
                 // 에러 처리
                 alert(error.response.data.message);
+                const errorMessage = JSON.parse(error.request.responseText).message;
+                alert(`${errorMessage}`);
             }
         }
     };

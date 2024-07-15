@@ -1,5 +1,6 @@
 package com.sparta.taskflow.domain.board.controller;
 
+import com.sparta.taskflow.common.aop.TokenUpdateRequired;
 import com.sparta.taskflow.common.dto.CommonDto;
 import com.sparta.taskflow.domain.board.dto.*;
 import com.sparta.taskflow.domain.board.repository.BoardInvitationRepository;
@@ -28,6 +29,7 @@ public class BoardController {
     private final BoardInvitationService boardInvitationService;
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @TokenUpdateRequired
     @PostMapping
     public ResponseEntity<?> createBoard(@RequestBody BoardReqDto reqDto,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResDto responseDto = boardService.createBoard(reqDto, userDetails.getUser());
@@ -56,6 +58,7 @@ public class BoardController {
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @TokenUpdateRequired
     @PutMapping("/{boardId}")
     public ResponseEntity<?> updateBoard(@PathVariable Long boardId, @RequestBody BoardReqDto reqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResDto responseDto = boardService.updateBoard(boardId, reqDto, userDetails.getUser());
@@ -65,6 +68,7 @@ public class BoardController {
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @TokenUpdateRequired
     @DeleteMapping("/{boardId}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long boardId,@AuthenticationPrincipal UserDetailsImpl userDetails) {
         boardService.deleteBoard(boardId, userDetails.getUser());
@@ -74,6 +78,7 @@ public class BoardController {
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @TokenUpdateRequired
     @PostMapping("{boardId}/invitations")
     public ResponseEntity<?> inviteMember(@PathVariable Long boardId, @RequestBody BoardInviteReqDto reqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         boardInvitationService.inviteUser(boardId, reqDto);

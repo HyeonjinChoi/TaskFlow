@@ -13,7 +13,8 @@ import com.sparta.taskflow.security.service.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 
 @Service
@@ -30,6 +32,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
 
     public String signup(SignupRequestDto signupRequestDto) {
@@ -67,11 +70,15 @@ public class AuthService {
         return  "유저님 회원가입이 완료되었습니다.";
     }
 
+    @Transactional
     public String signout(SignoutRequestDto requestDto, User user) {
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+        User users = userRepository.findById(user.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), users.getPassword())) {
             throw new BusinessException(ErrorCode.FAIL_AUTHENTICATION);
         }
-        user.signout();
+        users.signout();
         return "회원탈퇴가 완료되었습니다. 그 동안 감사했습니다.";
     }
 
@@ -111,21 +118,38 @@ public class AuthService {
         return "로그아웃이 완료되었습니다.";
     }
 
-    @Transactional
-    public TokenResponseDto refresh( User user , HttpServletResponse httpResponse) {
 
-        User logout = userRepository.findById(user.getId())
+    @Transactional
+    public String refreshToken(String token) {
+        User user = userRepository.findById(jwtUtil.getUserFromToken(token).getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        jwtUtil.isTokenValidate(user.getRefreshToken());
-
-        String accessToken = jwtUtil.createAccessToken(user.getId(), user.getUsername(),user.getEmail(), user.getRole(), user.getStatus(), user.getNickname());
-        String refreshToken = jwtUtil.createRefreshToken();
-
-        user.addRefreshToken(refreshToken);
-        httpResponse.addHeader(HttpHeaders.AUTHORIZATION, accessToken);
-
-        return new TokenResponseDto(accessToken);
-
+        if(jwtUtil.isTokenValidate(user.getRefreshToken().substring(7))) {
+            String accessToken = jwtUtil.createAccessToken(user.getId(), user.getUsername(), user.getEmail(), user.getRole(), user.getStatus(), user.getNickname());
+            return accessToken;
+        } else {
+            return login(user.getUsername(), user.getPassword());
+        }
     }
+
+    @Value("http://localhost:8080")
+    private String authServerUrl;
+
+    private String login(String username, String password) {
+        String loginUrl = authServerUrl + "/api/auth/login";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        LoginRequestDto requestDto = LoginRequestDto.builder()
+                .username(username)
+                .password(password)
+                .build();
+        HttpEntity<LoginRequestDto> requestEntity = new HttpEntity<>(requestDto, headers);
+
+        ResponseEntity<TokenResponseDto> response = restTemplate.exchange(loginUrl, HttpMethod.POST, requestEntity, TokenResponseDto.class);
+
+        return response.getBody().getAccessToken();
+    }
+
 }

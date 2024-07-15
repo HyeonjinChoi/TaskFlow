@@ -1,5 +1,6 @@
 package com.sparta.taskflow.domain.card.controller;
 
+import com.sparta.taskflow.common.aop.TokenUpdateRequired;
 import com.sparta.taskflow.domain.board.service.BoardInvitationService;
 import com.sparta.taskflow.domain.board.service.BoardService;
 import com.sparta.taskflow.security.principal.UserDetailsImpl;
@@ -35,7 +36,7 @@ public class CardController {
 	private final CardService cardService;
 	private final BoardInvitationService boardInvitationService;
 
-
+	@TokenUpdateRequired
 	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByBoardId(#requestDto.boardId, #userDetails.user.id)")
 	@PostMapping
 	public ResponseEntity<CommonDto<CardResponseDto>> createCard(
@@ -61,7 +62,7 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 전체 조회에 성공하였습니다.", cards));
 
 	}
-
+	@TokenUpdateRequired
 	@GetMapping("/{cardId}")
 	public ResponseEntity<CommonDto<CardResponseDto>> getCard(
 		@PathVariable Long cardId) {
@@ -72,7 +73,7 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 단건 조회에 성공하였습니다.", card));
 	}
 
-
+	@TokenUpdateRequired
 	@PutMapping("/{cardId}")
 	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#cardId , #userDetails.user.id)")
 	public ResponseEntity<CommonDto<CardResponseDto>> updateCard(
@@ -86,6 +87,7 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.OK.value(), "카드 수정에 성공하였습니다.", card));
 	}
 
+	@TokenUpdateRequired
 	@DeleteMapping("/{cardId}")
 	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#cardId , #userDetails.user.id)")
 	public ResponseEntity<CommonDto<Void>> deleteCard (
@@ -98,8 +100,9 @@ public class CardController {
 			.body(new CommonDto<>(HttpStatus.NO_CONTENT.value(), "카드 삭제에 성공하였습니다.", null));
 	}
 
+	@TokenUpdateRequired
 	@PutMapping("/move")
-//	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#updateCardPositionDto.cardId, #userDetails.user.id)")
+	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#updateCardPositionDto.cardId, #userDetails.user.id)")
 	public ResponseEntity<CommonDto<Void>> updateCardPosition(
 		@RequestBody UpdateCardPositionDto updateCardPositionDto,@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
