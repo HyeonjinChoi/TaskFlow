@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance'; // 경로 수정
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useInView } from 'react-intersection-observer';
 import CardFormModal from './CardFormModal';
+import SectionEditModal from './SectionEditModal';
 import './BoardDetail.css';
 
 function BoardDetail({ onLogout }) {
@@ -14,7 +15,9 @@ function BoardDetail({ onLogout }) {
     const [loading, setLoading] = useState(true);
     const [contents, setContents] = useState('');
     const [selectedSectionId, setSelectedSectionId] = useState(null);
-    const [showModal, setShowModal] = useState(false);
+    const [showCardModal, setShowCardModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editingSection, setEditingSection] = useState(null);
     const [page, setPage] = useState(0); // 섹션 페이지 상태 추가
     const [hasMoreSections, setHasMoreSections] = useState(true);
 
@@ -70,27 +73,6 @@ function BoardDetail({ onLogout }) {
         }
     }
 
-    async function fetchMoreCards(sectionId, cardPage) {
-        try {
-            const token = localStorage.getItem('Authorization');
-            const response = await axiosInstance.get(`/api/cards?boardId=${boardId}&sectionId=${sectionId}&page=${cardPage}`, {
-                headers: { Authorization: token }
-            });
-
-            const newCards = response.data.data.content;
-
-            setSections(prevSections =>
-                prevSections.map(section =>
-                    section.sectionId === sectionId
-                        ? { ...section, cards: [...section.cards, ...newCards], cardPage: cardPage + 1, hasMoreCards: newCards.length > 0 }
-                        : section
-                )
-            );
-        } catch (error) {
-            console.error('추가 카드 목록 가져오기 실패:', error);
-        }
-    }
-
     async function handleAddSession() {
         try {
             const token = localStorage.getItem('Authorization');
@@ -127,13 +109,37 @@ function BoardDetail({ onLogout }) {
         }
     }
 
-    function openModal(sectionId) {
-        setSelectedSectionId(sectionId);
-        setShowModal(true);
+    async function handleUpdateSection(sectionId, newContents) {
+        try {
+            const token = localStorage.getItem('Authorization');
+            await axiosInstance.put(`/api/sections/${sectionId}`, {
+                contents: newContents
+            }, {
+                headers: { Authorization: token }
+            });
+            fetchSections();
+            setShowEditModal(false);
+        } catch (error) {
+            console.error('섹션 수정 실패:', error);
+        }
     }
 
-    function closeModal() {
-        setShowModal(false);
+    function openCardModal(sectionId) {
+        setSelectedSectionId(sectionId);
+        setShowCardModal(true);
+    }
+
+    function closeCardModal() {
+        setShowCardModal(false);
+    }
+
+    function openEditModal(section) {
+        setEditingSection(section);
+        setShowEditModal(true);
+    }
+
+    function closeEditModal() {
+        setShowEditModal(false);
     }
 
     async function handleDeleteSession(sectionId) {
@@ -327,7 +333,8 @@ function BoardDetail({ onLogout }) {
                                                         <p>작성일: {section.createdAt}</p>
                                                         <p>수정일: {section.modifiedAt}</p>
                                                         <button onClick={() => handleDeleteSession(section.sectionId)} className="button">섹션 삭제</button>
-                                                        <button onClick={() => openModal(section.sectionId)} className="button">카드 추가</button>
+                                                        <button onClick={() => openEditModal(section)} className="button">섹션 수정</button>
+                                                        <button onClick={() => openCardModal(section.sectionId)} className="button">카드 추가</button>
                                                         <Droppable droppableId={section.sectionId.toString()} type="CARD">
                                                             {(provided, snapshot) => (
                                                                 <div
@@ -363,10 +370,17 @@ function BoardDetail({ onLogout }) {
                                                             )}
                                                         </Droppable>
                                                     </div>
-                                                    {showModal && selectedSectionId === section.sectionId && (
+                                                    {showCardModal && selectedSectionId === section.sectionId && (
                                                         <CardFormModal
                                                             onSubmit={handleAddCard}
-                                                            onClose={closeModal}
+                                                            onClose={closeCardModal}
+                                                        />
+                                                    )}
+                                                    {showEditModal && editingSection && editingSection.sectionId === section.sectionId && (
+                                                        <SectionEditModal
+                                                            section={editingSection}
+                                                            onSubmit={handleUpdateSection}
+                                                            onClose={closeEditModal}
                                                         />
                                                     )}
                                                 </div>
