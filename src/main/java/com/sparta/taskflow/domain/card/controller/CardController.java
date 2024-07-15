@@ -99,7 +99,7 @@ public class CardController {
 	}
 
 	@PutMapping("/move")
-	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#updateCardPositionDto.cardId, #userDetails.user.id)")
+//	@PreAuthorize("@customSecurityExpressionRoot.isCardAllowedByCardId(#updateCardPositionDto.cardId, #userDetails.user.id)")
 	public ResponseEntity<CommonDto<Void>> updateCardPosition(
 		@RequestBody UpdateCardPositionDto updateCardPositionDto,@AuthenticationPrincipal UserDetailsImpl userDetails) {
 

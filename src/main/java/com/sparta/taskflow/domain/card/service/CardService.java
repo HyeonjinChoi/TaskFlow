@@ -123,8 +123,12 @@ public class CardService {
 		UpdateCardPositionDto updateCardPositionDto,
 		User user) {
 
+		Section section = findSection(updateCardPositionDto.getSectionId());
 		Card card = findCard(updateCardPositionDto.getCardId());
 
+		card.moveUpdate(section);
+
+		/*
 		Section oldSection = card.getSection();
 		Section newSection = findSection(updateCardPositionDto.getSectionId());
 
@@ -145,6 +149,7 @@ public class CardService {
 				}
 			});
 			card.updatePosition(newPosition);
+
 		} else {
 			oldSectionCards.remove(card);
 			oldSectionCards.forEach(c -> {
@@ -162,8 +167,8 @@ public class CardService {
 			card.updateSection(newSection, newPosition);
 		}
 
-		cardRepository.saveAll(oldSectionCards);
 		cardRepository.saveAll(newSectionCards);
+		cardRepository.saveAll(oldSectionCards);*/
 	}
 
 
