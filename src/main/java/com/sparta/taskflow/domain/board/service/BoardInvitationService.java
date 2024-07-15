@@ -32,6 +32,10 @@ public class BoardInvitationService {
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 
+        if(!boardService.isBoardByUser(boardId, user.getId())) {
+            throw new BusinessException(ErrorCode.BOARD_NO_PERMISSION);
+        }
+
         if (boardInvitationRepository.existsByBoardIdAndUserId(boardId, user.getId())){
             throw new BusinessException(ErrorCode.BOARD_INVITE_ALREADY_MEMBER);
         }
