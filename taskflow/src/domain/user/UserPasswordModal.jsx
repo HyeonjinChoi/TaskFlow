@@ -14,16 +14,17 @@ const UserPasswordModal = ({ onSubmit, onClose }) => {
             <div className="modal-content">
                 <h3 className="cards">비밀번호 변경<span className="close" onClick={onClose}>&times;</span></h3>
                 <div><label>
-                    현제 비밀번호:
+                    현재 비밀번호:
                     <input
-                        type="text"
+                        type="password"
                         value={currentPassword}
                         onChange={(e) => setcurrentPassword(e.target.value)}
                     />
                 </label></div>
                 <div><label>
-                    변경할 비밀번호:
+                    새로운 비밀번호:
                     <input
+                        type="password"
                         value={newPassword}
                         onChange={(e) => setnewPassword(e.target.value)}
                     />
