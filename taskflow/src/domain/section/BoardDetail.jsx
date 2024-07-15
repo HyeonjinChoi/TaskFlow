@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosInstance'; // 경로 수정
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import CardFormModal from './CardFormModal';
@@ -23,7 +23,7 @@ function BoardDetail({ onLogout }) {
     async function fetchBoardDetail() {
         try {
             const token = localStorage.getItem('Authorization');
-            const response = await axios.get(`http://localhost:8080/api/boards/${boardId}`, {
+            const response = await axiosInstance.get(`/api/boards/${boardId}`, {
                 headers: { Authorization: token }
             });
             setBoard(response.data.data);
@@ -37,11 +37,11 @@ function BoardDetail({ onLogout }) {
     async function fetchSections() {
         try {
             const token = localStorage.getItem('Authorization');
-            const response = await axios.get(`http://localhost:8080/api/sections?boardId=${boardId}&page=0`, {
+            const response = await axiosInstance.get(`/api/sections?boardId=${boardId}&page=0`, {
                 headers: { Authorization: token }
             });
             const sectionsWithCards = await Promise.all(response.data.data.content.map(async (section) => {
-                const cardsResponse = await axios.get(`http://localhost:8080/api/cards?boardId=${boardId}&sectionId=${section.sectionId}&page=0`, {
+                const cardsResponse = await axiosInstance.get(`/api/cards?boardId=${boardId}&sectionId=${section.sectionId}&page=0`, {
                     headers: { Authorization: token }
                 });
                 section.cards = cardsResponse.data.data.content;
@@ -56,7 +56,7 @@ function BoardDetail({ onLogout }) {
     async function handleAddSession() {
         try {
             const token = localStorage.getItem('Authorization');
-            await axios.post(`http://localhost:8080/api/sections`, {
+            await axiosInstance.post(`/api/sections`, {
                 contents: contents,
                 boardId: boardId
             }, {
@@ -72,7 +72,7 @@ function BoardDetail({ onLogout }) {
     async function handleAddCard(title, contents, dueDate) {
         try {
             const token = localStorage.getItem('Authorization');
-            await axios.post(`http://localhost:8080/api/cards`, {
+            await axiosInstance.post(`/api/cards`, {
                 title: title,
                 contents: contents,
                 dueDate: dueDate,
@@ -101,7 +101,7 @@ function BoardDetail({ onLogout }) {
         if (confirmDelete) {
             try {
                 const token = localStorage.getItem('Authorization');
-                await axios.delete(`http://localhost:8080/api/sections/${sectionId}`, {
+                await axiosInstance.delete(`/api/sections/${sectionId}`, {
                     headers: { Authorization: token }
                 });
                 fetchSections();
@@ -116,7 +116,7 @@ function BoardDetail({ onLogout }) {
         if (confirmDelete) {
             try {
                 const token = localStorage.getItem('Authorization');
-                await axios.delete(`http://localhost:8080/api/cards/${cardId}`, {
+                await axiosInstance.delete(`/api/cards/${cardId}`, {
                     headers: { Authorization: token }
                 });
                 fetchSections();
@@ -146,7 +146,7 @@ function BoardDetail({ onLogout }) {
     async function updateSectionPosition(sectionId, newPosition) {
         try {
             const token = localStorage.getItem('Authorization');
-            await axios.put(`http://localhost:8080/api/sections/move`, {
+            await axiosInstance.put(`/api/sections/move`, {
                 sectionId: sectionId,
                 newPosition: newPosition
             }, {
@@ -161,7 +161,7 @@ function BoardDetail({ onLogout }) {
     async function updateCardPosition(cardId, newPosition, sectionId) {
         try {
             const token = localStorage.getItem('Authorization');
-            await axios.put(`http://localhost:8080/api/cards/move`, {
+            await axiosInstance.put(`/api/cards/move`, {
                 cardId: cardId,
                 newPosition: newPosition,
                 sectionId: sectionId
@@ -170,7 +170,7 @@ function BoardDetail({ onLogout }) {
             });
             fetchSections();
         } catch (error) {
-            console.error('카드 순서 업데이트 실패:', error);
+            console.error('카드 순서 업데이트 실패:', error.response.data.message);
         }
     }
 
