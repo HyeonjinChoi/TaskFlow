@@ -7,7 +7,6 @@ import CardFormModal from './CardFormModal';
 import SectionEditModal from './SectionEditModal';
 import InviteMemberModal from './InviteMemberModal';
 import './BoardDetail.css';
-import axios from "axios";
 
 function BoardDetail({ onLogout }) {
     const { boardId } = useParams();
@@ -287,52 +286,56 @@ function BoardDetail({ onLogout }) {
     }
 
     async function handleOnDragEnd(result) {
-        const { destination, source, draggableId, type } = result;
+        try {
+            const { destination, source, draggableId, type } = result;
 
-        if (!destination) return;
+            if (!destination) return;
 
-        if (destination.droppableId === source.droppableId && destination.index === source.index) {
-            return;
-        }
-
-        if (type === 'SECTION') {
-            const newSections = Array.from(sections);
-            const [movedSection] = newSections.splice(source.index, 1);
-            newSections.splice(destination.index, 0, movedSection);
-
-            setSections(newSections);
-
-            await updateSectionPosition(movedSection.sectionId, destination.index);
-        } else if (type === 'CARD') {
-            const startSectionIndex = sections.findIndex(section => section.sectionId.toString() === source.droppableId);
-            const endSectionIndex = sections.findIndex(section => section.sectionId.toString() === destination.droppableId);
-
-            if (startSectionIndex === -1 || endSectionIndex === -1) return;
-
-            const startSection = sections[startSectionIndex];
-            const endSection = sections[endSectionIndex];
-
-            const newStartCards = Array.from(startSection.cards);
-            const [movedCard] = newStartCards.splice(source.index, 1);
-
-            if (startSection === endSection) {
-                newStartCards.splice(destination.index, 0, movedCard);
-                const newSections = Array.from(sections);
-                newSections[startSectionIndex].cards = newStartCards;
-
-                setSections(newSections);
-                await updateCardPosition(movedCard.cardId, destination.index, startSection.sectionId);
-            } else {
-                const newEndCards = Array.from(endSection.cards);
-                newEndCards.splice(destination.index, 0, movedCard);
-
-                const newSections = Array.from(sections);
-                newSections[startSectionIndex].cards = newStartCards;
-                newSections[endSectionIndex].cards = newEndCards;
-
-                setSections(newSections);
-                await updateCardPosition(movedCard.cardId, destination.index, endSection.sectionId);
+            if (destination.droppableId === source.droppableId && destination.index === source.index) {
+                return;
             }
+
+            if (type === 'SECTION') {
+                const newSections = Array.from(sections);
+                const [movedSection] = newSections.splice(source.index, 1);
+                newSections.splice(destination.index, 0, movedSection);
+
+                setSections(newSections);
+
+                await updateSectionPosition(movedSection.sectionId, destination.index);
+            } else if (type === 'CARD') {
+                const startSectionIndex = sections.findIndex(section => section.sectionId.toString() === source.droppableId);
+                const endSectionIndex = sections.findIndex(section => section.sectionId.toString() === destination.droppableId);
+
+                if (startSectionIndex === -1 || endSectionIndex === -1) return;
+
+                const startSection = sections[startSectionIndex];
+                const endSection = sections[endSectionIndex];
+
+                const newStartCards = Array.from(startSection.cards);
+                const [movedCard] = newStartCards.splice(source.index, 1);
+
+                if (startSection === endSection) {
+                    newStartCards.splice(destination.index, 0, movedCard);
+                    const newSections = Array.from(sections);
+                    newSections[startSectionIndex].cards = newStartCards;
+
+                    setSections(newSections);
+                    await updateCardPosition(movedCard.cardId, destination.index, startSection.sectionId);
+                } else {
+                    const newEndCards = Array.from(endSection.cards);
+                    newEndCards.splice(destination.index, 0, movedCard);
+
+                    const newSections = Array.from(sections);
+                    newSections[startSectionIndex].cards = newStartCards;
+                    newSections[endSectionIndex].cards = newEndCards;
+
+                    setSections(newSections);
+                    await updateCardPosition(movedCard.cardId, destination.index, endSection.sectionId);
+                }
+            }
+        } catch (error) {
+            console.error('드래그 앤 드롭 실패:', error);
         }
     }
 
@@ -361,12 +364,11 @@ function BoardDetail({ onLogout }) {
                                             className="section-input"
                                         />
                                         <button onClick={handleAddSession} className="button">섹션 추가</button>
-
                                     </>
                                 )}
 
                                 <Link to="/">
-                                <button onClick={handleLogout}>로그아웃</button>
+                                    <button onClick={handleLogout}>로그아웃</button>
                                 </Link>
                                 <Link to="/board">
                                     <button onClick={handboradlist}>보드 리스트</button>
@@ -417,7 +419,6 @@ function BoardDetail({ onLogout }) {
                                                                 <button onClick={() => openEditModal(section)}
                                                                         className="button">섹션 수정
                                                                 </button>
-
                                                             </>
                                                         )}
                                                         <button onClick={() => openCardModal(section.sectionId)}
